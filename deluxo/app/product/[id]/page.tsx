@@ -16,91 +16,142 @@ import {
   Users,
 } from "lucide-react"
 import { useState, useEffect } from "react"
+import { useCart } from "@/contexts/cart-context"
+import { Header } from "@/components/header"
+import { CartModal } from "@/components/cart-modal"
+import { products } from "@/components/product-grid"
 
-// Mock product data - in real app this would come from API
+// Get product data from the main product grid
 const getProductById = (id: string) => {
-  const products = [
-    {
-      id: 1,
-      title: "GTA V Money Boost - PC Enhanced",
-      subtitle: "Professional money boosting service for PC players",
-      price: 14.99,
-      originalPrice: 19.99,
-      platform: "PC Enhanced",
-      level: 120,
-      cash: 1000000000,
-      image: "/luxury-cars-display.png",
-      seller: "Deluxo",
-      rating: 4.9,
-      reviews: [
-        {
-          id: 1,
-          name: "MoneyBoostFan",
-          rating: 5,
-          comment:
-            "Deluxo's money boost service is unmatched! Got my 2 billion GTA$ in 15 minutes. Professional and secure!",
-          date: "2025-01-15",
-          verified: true,
-        },
-        {
-          id: 2,
-          name: "GTAMillionaire",
-          rating: 5,
-          comment:
-            "Best purchase ever! Deluxo delivered exactly what they promised. Fast delivery and great customer support!",
-          date: "2025-01-14",
-          verified: true,
-        },
-        {
-          id: 3,
-          name: "CashKing2025",
-          rating: 5,
-          comment: "Amazing service from Deluxo! Got my money boost quickly and safely. Will definitely use again!",
-          date: "2025-01-13",
-          verified: true,
-        },
-        {
-          id: 4,
-          name: "RichGamer88",
-          rating: 5,
-          comment:
-            "Deluxo's modded accounts are incredible! Everything unlocked and billions in cash. Perfect service!",
-          date: "2025-01-12",
-          verified: true,
-        },
-      ],
-      badge: "MONEY BOOST",
-      description:
-        "Get instant GTA$ delivered to your account safely and quickly. Our professional team uses legitimate methods to boost your in-game currency without any risk to your account.",
-      features: [
-        "100% Safe & Secure",
-        "Instant Delivery",
-        "24/7 Support",
-        "Money Back Guarantee",
-        "No Account Sharing Required",
-        "Works on All Platforms",
-      ],
-      variants: [
-        { id: 1, name: "Tier 1 - 1 Billion", description: "1 Billion GTA$ - Any Rank - All Unlocks", price: 14.99 },
-        { id: 2, name: "Tier 2 - 2 Billion", description: "2 Billion GTA$ - Any Rank - All Unlocks", price: 24.99 },
-        { id: 3, name: "Tier 3 - 3 Billion", description: "3 Billion GTA$ - Any Rank - All Unlocks", price: 34.99 },
-        { id: 4, name: "Tier 4 - 4 Billion", description: "4 Billion GTA$ - Any Rank - All Unlocks", price: 44.99 },
-      ],
-      screenshots: [
-        "/luxury-cars-display.png",
-        "/rare-fortnite-account.png",
-        "/minecraft-premium-cape.png",
-        "/valorant-immortal-skins.png",
-      ],
-    },
-  ]
+  const product = products.find((p) => p.id === Number.parseInt(id))
+  if (!product) return null
 
-  return products.find((p) => p.id === Number.parseInt(id)) || products[0]
+  // Add customer reviews based on product type
+  const getReviewsForProduct = (productId: number) => {
+    switch (productId) {
+      case 1: // PC Money Boosting
+        return [
+          {
+            id: 1,
+            name: "MoneyBoostFan",
+            rating: 5,
+            comment: "Amazing PC money boost service! Got my 2 billion GTA$ in 15 minutes. Professional and secure!",
+            date: "2025-01-15",
+            verified: true,
+          },
+          {
+            id: 2,
+            name: "GTAMillionaire",
+            rating: 5,
+            comment: "Best purchase ever! Fast delivery and great customer support for PC!",
+            date: "2025-01-14",
+            verified: true,
+          },
+          {
+            id: 3,
+            name: "CashKing2025",
+            rating: 5,
+            comment: "Amazing service! Got my PC money boost quickly and safely. Will definitely use again!",
+            date: "2025-01-13",
+            verified: true,
+          },
+        ]
+      case 2: // PC Modded Accounts
+        return [
+          {
+            id: 1,
+            name: "ModdedGamer88",
+            rating: 5,
+            comment: "Incredible PC modded account! Everything unlocked and billions in cash. Perfect service!",
+            date: "2025-01-12",
+            verified: true,
+          },
+          {
+            id: 2,
+            name: "PCMasterRace",
+            rating: 5,
+            comment: "The modded outfits and cars are insane! Best PC account I've ever bought.",
+            date: "2025-01-11",
+            verified: true,
+          },
+          {
+            id: 3,
+            name: "EliteGamer2025",
+            rating: 4,
+            comment: "Great PC modded account, delivery was instant and everything works perfectly.",
+            date: "2025-01-10",
+            verified: true,
+          },
+        ]
+      case 3: // Console Money Boosting
+        return [
+          {
+            id: 1,
+            name: "ConsoleKing",
+            rating: 5,
+            comment: "Perfect console money boost! Works great on PS5, got 4 billion with modded cars!",
+            date: "2025-01-09",
+            verified: true,
+          },
+          {
+            id: 2,
+            name: "XboxGamer247",
+            rating: 5,
+            comment: "Excellent service for Xbox! The modded outfits and cars are amazing quality.",
+            date: "2025-01-08",
+            verified: true,
+          },
+          {
+            id: 3,
+            name: "PS4Legend",
+            rating: 5,
+            comment: "Best console boost service! Fast delivery and the modded content is incredible.",
+            date: "2025-01-07",
+            verified: true,
+          },
+        ]
+      case 4: // Console Modded Accounts
+        return [
+          {
+            id: 1,
+            name: "ConsolePro",
+            rating: 5,
+            comment: "Amazing console modded account! Works perfectly on PS5 with all unlocks and modded content.",
+            date: "2025-01-06",
+            verified: true,
+          },
+          {
+            id: 2,
+            name: "XboxModder",
+            rating: 5,
+            comment: "Best console modded account ever! 10 billion cash and exclusive modded cars. Highly recommend!",
+            date: "2025-01-05",
+            verified: true,
+          },
+          {
+            id: 3,
+            name: "NextGenGamer",
+            rating: 4,
+            comment: "Great modded account for console. Everything works as described, fast delivery!",
+            date: "2025-01-04",
+            verified: true,
+          },
+        ]
+      default:
+        return []
+    }
+  }
+
+  return {
+    ...product,
+    customerReviews: getReviewsForProduct(product.id)
+  }
 }
 
 export default function ProductPage() {
   const params = useParams()
   const router = useRouter()
+  const { addToCart, cartCount, setIsCartOpen, isCartOpen, cartItems, removeFromCart, updateQuantity } = useCart()
   const [selectedVariant, setSelectedVariant] = useState(0)
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
 
@@ -109,7 +160,12 @@ export default function ProductPage() {
   }, [])
 
   const product = getProductById(params.id as string)
-  const selectedPrice = product.variants[selectedVariant]?.price || product.price
+  
+  if (!product) {
+    return <div>Product not found</div>
+  }
+  
+  const selectedPrice = product.variants?.[selectedVariant]?.price || product.price
 
   const formatCash = (amount: number) => {
     if (amount >= 1000000) {
@@ -118,15 +174,26 @@ export default function ProductPage() {
     return `$${amount.toLocaleString()}`
   }
 
-  const handleAddToCart = () => {
-    // Add to cart logic here
-    console.log("[v0] Adding to cart:", { product, variant: product.variants[selectedVariant] })
+  const handleAddToCart = (e?: React.MouseEvent) => {
+    const selectedVariantData = product.variants?.[selectedVariant]
+    addToCart(product, selectedVariantData)
+    
+    // Add visual feedback
+    if (e) {
+      const button = e.currentTarget as HTMLButtonElement
+      button.style.transform = 'scale(0.95)'
+      setTimeout(() => {
+        button.style.transform = 'scale(1)'
+      }, 150)
+    }
   }
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b border-border/50 bg-card/30 backdrop-blur-sm sticky top-0 z-50">
+      <Header cartCount={cartCount} onCartClick={() => setIsCartOpen(true)} />
+      
+      {/* Product Header */}
+      <div className="border-b border-border/50 bg-card/30 backdrop-blur-sm">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="sm" onClick={() => router.back()} className="hover:bg-accent/10">
@@ -151,7 +218,7 @@ export default function ProductPage() {
           <div className="space-y-6">
             <div className="relative">
               <img
-                src={product.screenshots[currentImageIndex] || "/placeholder.svg"}
+                src={product.screenshots?.[currentImageIndex] || product.image || "/placeholder.svg"}
                 alt={product.title}
                 className="w-full h-96 object-cover rounded-2xl shadow-2xl"
               />
@@ -165,7 +232,7 @@ export default function ProductPage() {
 
             {/* Thumbnail Gallery */}
             <div className="grid grid-cols-4 gap-3">
-              {product.screenshots.map((screenshot, index) => (
+              {product.screenshots?.map((screenshot, index) => (
                 <button
                   key={index}
                   onClick={() => setCurrentImageIndex(index)}
@@ -193,7 +260,7 @@ export default function ProductPage() {
                 <div className="flex items-center gap-2">
                   <Star className="w-5 h-5 fill-yellow-400 text-yellow-400" />
                   <span className="text-lg font-semibold">{product.rating}</span>
-                  <span className="text-muted-foreground">({product.reviews.length} reviews)</span>
+                  <span className="text-muted-foreground">({product.reviews} reviews)</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full bg-green-500" />
@@ -223,7 +290,7 @@ export default function ProductPage() {
             <div>
               <h3 className="text-2xl font-semibold mb-4">Select Package</h3>
               <div className="space-y-3">
-                {product.variants.map((variant, index) => (
+                {product.variants?.map((variant, index) => (
                   <button
                     key={variant.id}
                     onClick={() => setSelectedVariant(index)}
@@ -267,7 +334,7 @@ export default function ProductPage() {
 
               <Button
                 onClick={handleAddToCart}
-                className="w-full bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70 text-lg py-6 shadow-lg"
+                className="w-full bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70 text-lg py-6 shadow-lg transition-transform duration-150"
               >
                 <ShoppingCart className="w-5 h-5 mr-2" />
                 Add to Cart
@@ -293,7 +360,7 @@ export default function ProductPage() {
             <div>
               <h3 className="text-2xl font-semibold mb-4">What's Included</h3>
               <div className="grid grid-cols-2 gap-3">
-                {product.features.map((feature, index) => (
+                {product.features?.map((feature, index) => (
                   <div key={index} className="flex items-center gap-2">
                     <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
                     <span className="text-muted-foreground">{feature}</span>
@@ -318,10 +385,10 @@ export default function ProductPage() {
           <div>
             <h3 className="text-2xl font-semibold mb-4 flex items-center gap-2">
               <Users className="w-6 h-6" />
-              Customer Reviews ({product.reviews.length})
+              Customer Reviews ({product.reviews})
             </h3>
             <div className="space-y-4">
-              {product.reviews.slice(0, 4).map((review) => (
+              {product.customerReviews?.slice(0, 4).map((review) => (
                 <Card key={review.id} className="bg-card/50 backdrop-blur-sm border-border/50">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-2">
@@ -350,8 +417,30 @@ export default function ProductPage() {
                 </Card>
               ))}
             </div>
+            
+            {/* Overall Rating Summary */}
+            <Card className="bg-card/50 backdrop-blur-sm border-border/50 mt-6">
+              <CardContent className="p-6">
+                <div className="text-center">
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <Star className="w-6 h-6 fill-yellow-400 text-yellow-400" />
+                    <span className="text-2xl font-bold">{product.rating}</span>
+                    <span className="text-muted-foreground">out of 5</span>
+                  </div>
+                  <p className="text-muted-foreground">Based on {product.reviews} verified reviews</p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
+        
+        <CartModal
+          isOpen={isCartOpen}
+          onClose={() => setIsCartOpen(false)}
+          cartItems={cartItems}
+          onRemoveItem={removeFromCart}
+          onUpdateQuantity={updateQuantity}
+        />
       </div>
     </div>
   )

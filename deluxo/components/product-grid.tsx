@@ -6,8 +6,9 @@ import { ProductModal } from "@/components/product-modal"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Grid, List, ChevronLeft, ChevronRight } from "lucide-react"
+import { Product } from "@/types"
 
-const products = [
+export const products: Product[] = [
   {
     id: 1,
     title: "PC Money Boosting Service",
@@ -16,7 +17,7 @@ const products = [
     originalPrice: 19.99,
     platform: "PC Enhanced",
     accountType: "Money Boost",
-    level: 1,
+    level: "1-8000",
     cash: 1000000000,
     image: "/gta-pc-money-boost.png",
     seller: "Deluxo",
@@ -102,8 +103,8 @@ const products = [
     originalPrice: 69.99,
     platform: "PC Enhanced",
     accountType: "Modded Account",
-    level: 500,
-    cash: 2000000000,
+    level: "1-8000",
+    cash: 2000000000, 
     image: "/gta-pc-modded-cars.png",
     seller: "Deluxo",
     rating: 4.8,
@@ -181,12 +182,12 @@ const products = [
   {
     id: 3,
     title: "Console Money Boosting (PS4/PS5/Xbox)",
-    subtitle: "Professional money boosting for console players",
+    subtitle: "Console money boosting with modded content",
     price: 72.99,
     originalPrice: 89.99,
     platform: "Console",
     accountType: "Money Boost",
-    level: 1,
+    level: "1-8000",
     cash: 2000000000,
     image: "/gta-console-money-boost.png",
     seller: "Deluxo",
@@ -215,7 +216,7 @@ const products = [
           "Any Rank Available",
           "All Unlocks Included",
           "Modded Outfits & Cars",
-          "Console Compatible",
+          "Console Optimized",
         ],
       },
       {
@@ -229,7 +230,7 @@ const products = [
           "Any Rank Available",
           "All Unlocks Included",
           "Modded Outfits & Cars",
-          "Console Compatible",
+          "Console Optimized",
         ],
       },
       {
@@ -243,7 +244,7 @@ const products = [
           "Any Rank Available",
           "All Unlocks Included",
           "Modded Outfits & Cars",
-          "Console Compatible",
+          "Console Optimized",
         ],
       },
       {
@@ -270,7 +271,7 @@ const products = [
     originalPrice: 99.99,
     platform: "Console",
     accountType: "Modded Account",
-    level: 500,
+    level: "1-8000",
     cash: 4000000000,
     image: "/gta-console-modded-cars.png",
     seller: "Deluxo",
@@ -382,7 +383,7 @@ export function ProductGrid({ onAddToCart, filters }: ProductGridProps) {
       }
 
       // Account type filter
-      if (filters.accountTypes.length > 0 && !filters.accountTypes.includes(product.accountType)) {
+      if (filters.accountTypes.length > 0 && product.accountType && !filters.accountTypes.includes(product.accountType)) {
         return false
       }
 
@@ -488,7 +489,7 @@ export function ProductGrid({ onAddToCart, filters }: ProductGridProps) {
             product={product}
             viewMode={viewMode}
             onProductClick={handleProductClick}
-            onVariantClick={handleVariantClick}
+            onAddToCart={onAddToCart}
           />
         ))}
       </div>
@@ -543,7 +544,6 @@ export function ProductGrid({ onAddToCart, filters }: ProductGridProps) {
       {selectedProduct && (
         <ProductModal
           product={selectedProduct}
-          variant={selectedVariant}
           isOpen={isModalOpen}
           onClose={handleCloseModal}
           onAddToCart={handleAddToCart}

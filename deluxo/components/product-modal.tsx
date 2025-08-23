@@ -7,41 +7,7 @@ import { Separator } from "@/components/ui/separator"
 import { Star, Shield, DollarSign, Check, X, ShoppingCart, User, Calendar } from "lucide-react"
 import Image from "next/image"
 import { useState, useEffect } from "react"
-
-interface Product {
-  id: number
-  title: string
-  subtitle: string
-  price: number
-  originalPrice?: number
-  platform: string
-  level: number
-  cash: number
-  image: string
-  seller: string
-  rating: number
-  reviews: number
-  isOnline: boolean
-  badge?: string
-  description?: string
-  features?: string[]
-  screenshots?: string[]
-  customerReviews?: {
-    id: number
-    name: string
-    rating: number
-    comment: string
-    date: string
-    verified: boolean
-  }[]
-  variants?: {
-    id: string
-    name: string
-    price: number
-    description: string
-    features: string[]
-  }[]
-}
+import { Product } from "@/types"
 
 interface ProductModalProps {
   product: Product
@@ -313,7 +279,7 @@ export function ProductModal({ product, isOpen, onClose, onAddToCart }: ProductM
             <div>
               <h3 className="font-semibold text-sm mb-2">What's Included</h3>
               <div className="grid grid-cols-1 gap-1">
-                {(selectedVariant?.features || product.features || []).map((feature, index) => (
+                {(selectedVariant?.features || product.features || []).map((feature: string, index: number) => (
                   <div key={index} className="flex items-center gap-2">
                     <Check className="w-3 h-3 text-green-500 flex-shrink-0" />
                     <span className="text-xs">{feature}</span>

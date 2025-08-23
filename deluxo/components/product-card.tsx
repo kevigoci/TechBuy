@@ -1,37 +1,21 @@
 "use client"
 
+import React from "react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Star, Shield, DollarSign, Eye } from "lucide-react"
 import { useRouter } from "next/navigation"
-
-interface Product {
-  id: number
-  title: string
-  subtitle: string
-  price: number
-  originalPrice?: number
-  platform: string
-  level: number
-  cash: number
-  image: string
-  seller: string
-  rating: number
-  reviews: number
-  isOnline: boolean
-  badge?: string
-  description?: string
-  features?: string[]
-}
+import { Product } from "@/types"
 
 interface ProductCardProps {
   product: Product
   viewMode: "grid" | "list"
   onProductClick?: (product: Product) => void
+  onAddToCart?: (product: Product) => void
 }
 
-export function ProductCard({ product, viewMode, onProductClick }: ProductCardProps) {
+export function ProductCard({ product, viewMode, onProductClick, onAddToCart }: ProductCardProps) {
   const router = useRouter()
   const formatCash = (amount: number) => {
     if (amount >= 1000000) {
@@ -44,6 +28,22 @@ export function ProductCard({ product, viewMode, onProductClick }: ProductCardPr
 
   const handleCardClick = () => {
     router.push(`/product/${displayProduct.id}`)
+  }
+
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation() // Prevent card click when clicking the add to cart button
+    e.preventDefault() // Prevent default button behavior
+    
+    if (onAddToCart) {
+      onAddToCart(displayProduct)
+      
+      // Add a small visual feedback animation
+      const button = e.currentTarget as HTMLButtonElement
+      button.style.transform = 'scale(0.95)'
+      setTimeout(() => {
+        button.style.transform = 'scale(1)'
+      }, 150)
+    }
   }
 
   if (viewMode === "list") {
@@ -99,9 +99,10 @@ export function ProductCard({ product, viewMode, onProductClick }: ProductCardPr
                     </Button>
                     <Button
                       size="sm"
-                      className="bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70"
+                      onClick={handleAddToCart}
+                      className="bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70 transition-transform duration-150"
                     >
-                      Buy Now
+                      Add to Cart
                     </Button>
                   </div>
                 </div>
@@ -197,9 +198,10 @@ export function ProductCard({ product, viewMode, onProductClick }: ProductCardPr
               </Button>
               <Button
                 size="sm"
-                className="bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70 shadow-lg"
+                onClick={handleAddToCart}
+                className="bg-gradient-to-r from-accent to-accent/80 hover:from-accent/90 hover:to-accent/70 shadow-lg transition-transform duration-150"
               >
-                Buy Now
+                Add to Cart
               </Button>
             </div>
           </div>

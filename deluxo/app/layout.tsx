@@ -1,6 +1,8 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Space_Grotesk, DM_Sans } from "next/font/google"
+import { CartProvider } from "@/contexts/cart-context"
+import { Toaster } from "sonner"
 import "./globals.css"
 
 const spaceGrotesk = Space_Grotesk({
@@ -37,7 +39,18 @@ html {
 }
         `}</style>
       </head>
-      <body className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased`}>{children}</body>
+      <body className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased`}>
+        <CartProvider>
+          {children}
+          <Toaster 
+            theme="dark" 
+            position="top-right"
+            expand={true}
+            richColors
+            closeButton
+          />
+        </CartProvider>
+      </body>
     </html>
   )
 }

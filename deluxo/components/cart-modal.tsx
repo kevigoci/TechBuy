@@ -4,28 +4,20 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Trash2, ExternalLink, MessageCircle } from "lucide-react"
+import { CartItem } from "@/contexts/cart-context"
 import Image from "next/image"
-
-interface CartItem {
-  id: number
-  title: string
-  price: string
-  image: string
-  quantity: number
-}
 
 interface CartModalProps {
   isOpen: boolean
   onClose: () => void
   cartItems: CartItem[]
-  onRemoveItem: (id: number) => void
-  onUpdateQuantity: (id: number, quantity: number) => void
+  onRemoveItem: (id: number | string) => void
+  onUpdateQuantity: (id: number | string, quantity: number) => void
 }
 
 export function CartModal({ isOpen, onClose, cartItems, onRemoveItem, onUpdateQuantity }: CartModalProps) {
   const total = cartItems.reduce((sum, item) => {
-    const price = Number.parseFloat(item.price.replace("$", ""))
-    return sum + price * item.quantity
+    return sum + item.price * item.quantity
   }, 0)
 
   const handleDiscordCheckout = () => {
@@ -64,8 +56,11 @@ export function CartModal({ isOpen, onClose, cartItems, onRemoveItem, onUpdateQu
 
                   <div className="flex-1 space-y-1">
                     <h4 className="font-medium">{item.title}</h4>
-                    <p className="text-sm text-muted-foreground">Seller: Deluxo</p>
-                    <p className="font-bold text-purple-400">{item.price}</p>
+                    {item.variant && (
+                      <p className="text-sm text-muted-foreground">{item.variant.name}</p>
+                    )}
+                    <p className="text-sm text-muted-foreground">Seller: {item.seller}</p>
+                    <p className="font-bold text-purple-400">${item.price.toFixed(2)}</p>
                   </div>
 
                   <div className="flex items-center gap-2">

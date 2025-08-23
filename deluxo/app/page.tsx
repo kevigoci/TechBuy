@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Header } from "@/components/header"
 import { Hero } from "@/components/hero"
 import { ProductGrid } from "@/components/product-grid"
@@ -8,58 +8,29 @@ import { Filters } from "@/components/filters"
 import { Footer } from "@/components/footer"
 import { Testimonials } from "@/components/testimonials"
 import { CartModal } from "@/components/cart-modal"
+import { useCart } from "@/contexts/cart-context"
 import LiveChat from "@/components/live-chat"
 
-interface CartItem {
-  id: number
-  title: string
-  price: string
-  image: string
-  quantity: number
-}
-
 export default function HomePage() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([])
-  const [isCartOpen, setIsCartOpen] = useState(false)
+  const { cartItems, cartCount, isCartOpen, setIsCartOpen, addToCart, removeFromCart, updateQuantity } = useCart()
   const [filters, setFilters] = useState({
     platforms: [] as string[],
     accountTypes: [] as string[],
     priceRange: [0, 200] as [number, number],
   })
 
-  const addToCart = (product: any) => {
-    console.log("[v0] Adding to cart:", { product })
-
-    const existingItem = cartItems.find((item) => item.id === product.id)
-
-    if (existingItem) {
-      console.log("[v0] Item exists, updating quantity")
-      setCartItems(cartItems.map((item) => (item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item)))
-    } else {
-      console.log("[v0] New item, adding to cart")
-      const newItem = {
-        id: product.id,
-        title: product.title,
-        price: product.price.toString(), // Remove dollar sign formatting
-        image: product.image,
-        quantity: 1,
-      }
-      console.log("[v0] New cart item:", newItem)
-      setCartItems([...cartItems, newItem])
+  // Handle hash-based navigation when page loads
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '')
+    if (hash) {
+      setTimeout(() => {
+        const element = document.getElementById(hash)
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" })
+        }
+      }, 100) // Small delay to ensure elements are rendered
     }
-
-    console.log("[v0] Cart items after update:", cartItems)
-  }
-
-  const removeFromCart = (id: number) => {
-    setCartItems(cartItems.filter((item) => item.id !== id))
-  }
-
-  const updateQuantity = (id: number, quantity: number) => {
-    setCartItems(cartItems.map((item) => (item.id === id ? { ...item, quantity } : item)))
-  }
-
-  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0)
+  }, [])
 
   return (
     <div className="min-h-screen bg-background">

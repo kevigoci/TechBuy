@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter, usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -14,8 +15,19 @@ interface HeaderProps {
 
 export function Header({ cartCount, onCartClick }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const router = useRouter()
+  const pathname = usePathname()
 
   const scrollToSection = (sectionId: string) => {
+    // If we're not on the homepage, navigate to homepage first
+    if (pathname !== '/') {
+      // Use window.location for proper hash navigation
+      window.location.href = `/#${sectionId}`
+      setIsMenuOpen(false)
+      return
+    }
+    
+    // If we're on homepage, scroll to section
     const element = document.getElementById(sectionId)
     if (element) {
       element.scrollIntoView({ behavior: "smooth" })
