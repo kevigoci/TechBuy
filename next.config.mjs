@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  reactStrictMode: false, // Disable strict mode to prevent double execution
+  reactStrictMode: false,
   eslint: {
     ignoreDuringBuilds: true,
   },
