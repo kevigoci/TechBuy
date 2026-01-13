@@ -1,171 +1,221 @@
 "use client"
 
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useRef } from "react"
+import React, { createContext, useContext, useState, useEffect, type ReactNode, useCallback, useRef } from "react"
 import { toast } from "sonner"
-import { CartItem } from "@/types"
+import { createClient } from "@/lib/supabase/client"
+import type { Product, ProductVariant, ProductImage } from "@/types/database"
+
+export interface CartItem {
+  id: string
+  product_id: string
+  variant_id: string | null
+  quantity: number
+  product: Product & { product_images: ProductImage[] }
+  variant: ProductVariant | null
+}
 
 interface CartContextType {
-  cartItems: CartItem[]
-  cartCount: number
-  cartTotal: number
-  addToCart: (product: any, variant?: any) => void
-  removeFromCart: (id: number | string) => void
-  updateQuantity: (id: number | string, quantity: number) => void
-  clearCart: () => void
+  items: CartItem[]
+  itemCount: number
+  subtotal: number
+  isLoading: boolean
   isCartOpen: boolean
   setIsCartOpen: (open: boolean) => void
+  addToCart: (product: Product & { product_images: ProductImage[] }, variant?: ProductVariant | null, quantity?: number) => Promise<void>
+  removeFromCart: (itemId: string) => Promise<void>
+  updateQuantity: (itemId: string, quantity: number) => Promise<void>
+  clearCart: () => Promise<void>
+  getItemPrice: (item: CartItem, currency: 'ALL' | 'EUR') => number
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
-export function CartProvider({ children }: { children: ReactNode }) {
-  const [cartItems, setCartItems] = useState<CartItem[]>([])
-  const [isCartOpen, setIsCartOpen] = useState(false)
-  const lastAddedRef = useRef<{ item: string; time: number; toastId?: string }>({ item: "", time: 0 })
+// Generate a session ID for guest users
+function getSessionId(): string {
+  if (typeof window === 'undefined') return ''
 
-  // Load cart from localStorage on mount
+  let sessionId = localStorage.getItem('cart_session_id')
+  if (!sessionId) {
+    sessionId = 'guest_' + Math.random().toString(36).substring(2, 15) + Date.now().toString(36)
+    localStorage.setItem('cart_session_id', sessionId)
+  }
+  return sessionId
+}
+
+export function CartProvider({ children }: { children: ReactNode }) {
+  const [items, setItems] = useState<CartItem[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [isCartOpen, setIsCartOpen] = useState(false)
+  const [userId, setUserId] = useState<string | null>(null)
+  const lastAddedRef = useRef<{ item: string; time: number }>({ item: "", time: 0 })
+  const supabase = createClient()
+
+  // Check auth state
   useEffect(() => {
-    const savedCart = localStorage.getItem("deluxo-cart")
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      setUserId(session?.user?.id ?? null)
+    }
+    checkAuth()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      const newUserId = session?.user?.id ?? null
+      if (newUserId !== userId) {
+        setUserId(newUserId)
+      }
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
+
+  // Load cart from localStorage (guest cart)
+  useEffect(() => {
+    loadCart()
+  }, [userId])
+
+  const loadCart = async () => {
+    setIsLoading(true)
+
+    // For now, use localStorage for both guests and logged-in users
+    // This can be enhanced to sync with Supabase when connected
+    const savedCart = localStorage.getItem('techbuy-cart-v2')
     if (savedCart) {
       try {
         const parsedCart = JSON.parse(savedCart)
-        setCartItems(parsedCart)
+        setItems(parsedCart)
       } catch (error) {
-        console.error("Error loading cart from localStorage:", error)
+        console.error('Error loading cart:', error)
+        setItems([])
       }
     }
-  }, [])
+
+    setIsLoading(false)
+  }
 
   // Save cart to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem("deluxo-cart", JSON.stringify(cartItems))
-  }, [cartItems])
+    if (!isLoading) {
+      localStorage.setItem('techbuy-cart-v2', JSON.stringify(items))
+    }
+  }, [items, isLoading])
 
-  const addToCart = useCallback((product: any, variant?: any) => {
-    const itemPrice = variant ? variant.price : product.price
-    const itemCash = variant ? variant.cash || product.cash : product.cash
-    const itemId = variant ? `${product.id}-${variant.id}` : product.id
-    
-    // Prevent duplicate calls within 1000ms (increased from 500ms)
+  const addToCart = useCallback(async (
+    product: Product & { product_images: ProductImage[] },
+    variant?: ProductVariant | null,
+    quantity: number = 1
+  ) => {
+    const itemKey = variant ? `${product.id}-${variant.id}` : product.id
     const now = Date.now()
-    const itemKey = `${itemId}-${itemPrice}`
-    
+
+    // Prevent duplicate calls within 1000ms
     if (lastAddedRef.current.item === itemKey && now - lastAddedRef.current.time < 1000) {
-      console.log('Duplicate call prevented for:', itemKey)
       return
     }
-    
-    // Dismiss any existing toast for this item
-    if (lastAddedRef.current.toastId) {
-      toast.dismiss(lastAddedRef.current.toastId)
-    }
-    
     lastAddedRef.current = { item: itemKey, time: now }
-    
-    const cartItem: CartItem = {
-      id: itemId,
-      title: product.title,
-      subtitle: variant ? variant.name : product.subtitle,
-      price: itemPrice,
-      originalPrice: product.originalPrice,
-      platform: product.platform,
-      level: product.level,
-      cash: itemCash,
-      image: product.image,
-      seller: product.seller || "Deluxo",
-      rating: product.rating,
-      reviews: product.reviews,
-      quantity: 1,
-      variant: variant
-    }
 
-    setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.id === itemId)
-      
-      if (existingItem) {
-        // Update quantity if item already exists
-        const updatedItems = prevItems.map(item =>
-          item.id === itemId
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-        
-        const toastId = toast.success(`${product.title} quantity updated in cart!`, {
-          description: variant ? `${variant.name} - $${itemPrice}` : `$${itemPrice}`,
-          duration: 3000,
-          id: `cart-update-${itemId}-${now}`, // Unique ID to prevent duplicates
+    setItems(prevItems => {
+      const existingIndex = prevItems.findIndex(
+        item => item.product_id === product.id && item.variant_id === (variant?.id ?? null)
+      )
+
+      if (existingIndex >= 0) {
+        // Update quantity
+        const updatedItems = [...prevItems]
+        updatedItems[existingIndex] = {
+          ...updatedItems[existingIndex],
+          quantity: updatedItems[existingIndex].quantity + quantity
+        }
+
+        toast.success('Cart updated', {
+          description: `${product.name_en} quantity increased`
         })
-        
-        lastAddedRef.current.toastId = String(toastId)
-        
+
         return updatedItems
       } else {
-        // Add new item to cart
-        const toastId = toast.success(`${product.title} added to cart!`, {
-          description: variant ? `${variant.name} - $${itemPrice}` : `$${itemPrice}`,
-          duration: 3000,
-          id: `cart-add-${itemId}-${now}`, // Unique ID to prevent duplicates
+        // Add new item
+        const newItem: CartItem = {
+          id: `${product.id}-${variant?.id ?? 'default'}-${Date.now()}`,
+          product_id: product.id,
+          variant_id: variant?.id ?? null,
+          quantity,
+          product,
+          variant: variant ?? null
+        }
+
+        toast.success('Added to cart', {
+          description: product.name_en,
           action: {
-            label: "View Cart",
-            onClick: () => setIsCartOpen(true),
-          },
+            label: 'View Cart',
+            onClick: () => setIsCartOpen(true)
+          }
         })
-        
-        lastAddedRef.current.toastId = String(toastId)
-        
-        return [...prevItems, cartItem]
+
+        return [...prevItems, newItem]
       }
     })
-  }, [setIsCartOpen])
+  }, [])
 
-  const removeFromCart = (id: number | string) => {
-    setCartItems(prevItems => {
-      const itemToRemove = prevItems.find(item => item.id === id)
-      const updatedItems = prevItems.filter(item => item.id !== id)
-      
-      if (itemToRemove) {
-        toast.success(`${itemToRemove.title} removed from cart`)
+  const removeFromCart = useCallback(async (itemId: string) => {
+    setItems(prevItems => {
+      const item = prevItems.find(i => i.id === itemId)
+      if (item) {
+        toast.success('Removed from cart', {
+          description: item.product.name_en
+        })
       }
-      
-      return updatedItems
+      return prevItems.filter(i => i.id !== itemId)
     })
-  }
+  }, [])
 
-  const updateQuantity = (id: number | string, quantity: number) => {
+  const updateQuantity = useCallback(async (itemId: string, quantity: number) => {
     if (quantity < 1) {
-      removeFromCart(id)
+      await removeFromCart(itemId)
       return
     }
 
-    setCartItems(prevItems =>
+    setItems(prevItems =>
       prevItems.map(item =>
-        item.id === id ? { ...item, quantity } : item
+        item.id === itemId ? { ...item, quantity } : item
       )
     )
+  }, [removeFromCart])
+
+  const clearCart = useCallback(async () => {
+    setItems([])
+    toast.success('Cart cleared')
+  }, [])
+
+  const getItemPrice = (item: CartItem, currency: 'ALL' | 'EUR'): number => {
+    if (item.variant) {
+      return currency === 'ALL' ? item.variant.price_all : item.variant.price_eur
+    }
+    return currency === 'ALL' ? item.product.price_all : item.product.price_eur
   }
 
-  const clearCart = () => {
-    setCartItems([])
-    toast.success("Cart cleared")
-  }
+  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
 
-  const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0)
-  const cartTotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-
-  const value: CartContextType = {
-    cartItems,
-    cartCount,
-    cartTotal,
-    addToCart,
-    removeFromCart,
-    updateQuantity,
-    clearCart,
-    isCartOpen,
-    setIsCartOpen,
-  }
+  // Calculate subtotal in ALL (default)
+  const subtotal = items.reduce((sum, item) => {
+    const price = item.variant ? item.variant.price_all : item.product.price_all
+    return sum + (price * item.quantity)
+  }, 0)
 
   return (
-    <CartContext.Provider value={value}>
+    <CartContext.Provider
+      value={{
+        items,
+        itemCount,
+        subtotal,
+        isLoading,
+        isCartOpen,
+        setIsCartOpen,
+        addToCart,
+        removeFromCart,
+        updateQuantity,
+        clearCart,
+        getItemPrice
+      }}
+    >
       {children}
     </CartContext.Provider>
   )

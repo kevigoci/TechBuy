@@ -48,7 +48,7 @@ export default function HowItWorksPage() {
         {/* Hero Section */}
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-6">
-            How Deluxo Marketplace Works
+            How TechBuy Works
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
             Get premium GTA V accounts and money boosting services in just 4 simple steps. Safe, secure, and delivered

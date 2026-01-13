@@ -33,7 +33,7 @@ export default function ContactPage() {
       title: "Email Support",
       description: "Send us an email and we'll respond within 24 hours",
       action: "Send Email",
-      link: "mailto:support@deluxomarketplace.com",
+      link: "mailto:support@techbuy.al",
     },
     {
       icon: <Clock className="w-8 h-8" />,

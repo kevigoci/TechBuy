@@ -1,9 +1,19 @@
 import type React from "react"
 import type { Metadata } from "next"
-import { Space_Grotesk, DM_Sans } from "next/font/google"
+import { Inter, Space_Grotesk } from "next/font/google"
+import { AuthProvider } from "@/contexts/auth-context"
+import { LanguageProvider } from "@/contexts/language-context"
+import { CurrencyProvider } from "@/contexts/currency-context"
 import { CartProvider } from "@/contexts/cart-context"
+import { WishlistProvider } from "@/contexts/wishlist-context"
 import { Toaster } from "sonner"
 import "./globals.css"
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+})
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
@@ -11,16 +21,10 @@ const spaceGrotesk = Space_Grotesk({
   variable: "--font-space-grotesk",
 })
 
-const dmSans = DM_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-dm-sans",
-})
-
 export const metadata: Metadata = {
-  title: "Deluxo - Premium Gaming Accounts & Items",
-  description: "Buy and sell premium gaming accounts and items. Trusted by millions of gamers worldwide.",
-  generator: "v0.app",
+  title: "TechBuy - Electronics & Technology Store",
+  description: "Albania's premier online electronics store. Shop computers, laptops, phones, TVs, gaming, and more with fast delivery and secure payments.",
+  keywords: ["electronics", "computers", "laptops", "phones", "Albania", "online store", "technology"],
 }
 
 export default function RootLayout({
@@ -29,27 +33,26 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="dark">
-      <head>
-        <style>{`
-html {
-  font-family: ${dmSans.style.fontFamily};
-  --font-sans: ${dmSans.variable};
-  --font-heading: ${spaceGrotesk.variable};
-}
-        `}</style>
-      </head>
-      <body className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased`}>
-        <CartProvider>
-          {children}
-          <Toaster 
-            theme="dark" 
-            position="top-right"
-            expand={true}
-            richColors
-            closeButton
-          />
-        </CartProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased bg-white`}>
+        <AuthProvider>
+          <LanguageProvider>
+            <CurrencyProvider>
+              <CartProvider>
+                <WishlistProvider>
+                  {children}
+                  <Toaster
+                    theme="light"
+                    position="top-right"
+                    expand={true}
+                    richColors
+                    closeButton
+                  />
+                </WishlistProvider>
+              </CartProvider>
+            </CurrencyProvider>
+          </LanguageProvider>
+        </AuthProvider>
       </body>
     </html>
   )

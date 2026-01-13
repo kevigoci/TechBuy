@@ -11,7 +11,7 @@ export default function HelpCenterPage() {
     {
       icon: <Book className="w-8 h-8" />,
       title: "Getting Started",
-      description: "Learn the basics of using Deluxo Marketplace",
+      description: "Learn the basics of using TechBuy",
       articles: [
         "How to create an account",
         "Making your first purchase",

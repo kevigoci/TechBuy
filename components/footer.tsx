@@ -1,231 +1,227 @@
 "use client"
 
-import type React from "react"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
+import Link from "next/link"
 import { Input } from "@/components/ui/input"
-import { Facebook, Twitter, Instagram, Youtube, Mail, MessageCircle } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { useLanguage } from "@/contexts/language-context"
+import {
+  Store,
+  Mail,
+  Phone,
+  MapPin,
+  Facebook,
+  Instagram,
+  Twitter,
+  Youtube,
+  CreditCard,
+  Truck,
+  Shield,
+  HeadphonesIcon,
+} from "lucide-react"
 import { useState } from "react"
+import { toast } from "sonner"
 
 export function Footer() {
+  const { t } = useLanguage()
   const [email, setEmail] = useState("")
-  const [showLiveChat, setShowLiveChat] = useState(false)
 
-  const handleEmailSubmit = (e: React.FormEvent) => {
+  const handleNewsletterSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (email) {
-      alert("Thank you for subscribing! You'll receive updates at " + email)
+      toast.success("Thank you for subscribing!")
       setEmail("")
     }
   }
 
-  const handleLinkClick = (section: string) => {
-    const element = document.getElementById(section)
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" })
-    }
-  }
-
-  const openDiscord = () => {
-    window.open("https://discord.gg/j2AaVSpkad", "_blank")
-  }
-
   return (
-    <>
-      <footer className="bg-card border-t border-border">
-        <div className="container mx-auto px-4 py-12">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {/* Company Info */}
-            <div>
-              <div className="flex items-center space-x-2 mb-4">
-                <div className="w-8 h-8 relative">
-                  <Image src="/deluxo-logo.png" alt="Deluxo Logo" fill className="object-contain" />
-                </div>
-                <span className="font-heading font-bold text-xl text-foreground">Deluxo Marketplace</span>
+    <footer className="bg-gray-900 text-white">
+      {/* Trust badges */}
+      <div className="border-b border-gray-800">
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center">
+                <Truck className="w-6 h-6 text-red-500" />
               </div>
-              <p className="text-muted-foreground mb-4">
-                The world's leading marketplace for GTA V accounts and money boosting services. Trusted by thousands of
-                gamers worldwide.
-              </p>
-              <div className="flex space-x-4">
-                <Button variant="ghost" size="sm" onClick={() => window.open("https://facebook.com/deluxo", "_blank")}>
-                  <Facebook className="w-4 h-4" />
-                </Button>
-                <Button variant="ghost" size="sm" onClick={() => window.open("https://twitter.com/deluxo", "_blank")}>
-                  <Twitter className="w-4 h-4" />
-                </Button>
-                <Button variant="ghost" size="sm" onClick={() => window.open("https://instagram.com/deluxo", "_blank")}>
-                  <Instagram className="w-4 h-4" />
-                </Button>
-                <Button variant="ghost" size="sm" onClick={() => window.open("https://youtube.com/deluxo", "_blank")}>
-                  <Youtube className="w-4 h-4" />
-                </Button>
+              <div>
+                <h4 className="font-semibold text-white">Free Shipping</h4>
+                <p className="text-sm text-gray-400">Orders over 5000 L</p>
               </div>
             </div>
-
-            {/* Quick Links */}
-            <div>
-              <h3 className="font-semibold text-foreground mb-4">Quick Links</h3>
-              <ul className="space-y-2">
-                <li>
-                  <button
-                    onClick={() => handleLinkClick("products")}
-                    className="text-muted-foreground hover:text-accent transition-colors text-left"
-                  >
-                    Browse Games
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => handleLinkClick("how-it-works")}
-                    className="text-muted-foreground hover:text-accent transition-colors text-left"
-                  >
-                    How It Works
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => handleLinkClick("safety")}
-                    className="text-muted-foreground hover:text-accent transition-colors text-left"
-                  >
-                    Safety & Security
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => handleLinkClick("pricing")}
-                    className="text-muted-foreground hover:text-accent transition-colors text-left"
-                  >
-                    Pricing
-                  </button>
-                </li>
-              </ul>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-green-500/10 rounded-full flex items-center justify-center">
+                <Shield className="w-6 h-6 text-green-500" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-white">Secure Payment</h4>
+                <p className="text-sm text-gray-400">100% secure</p>
+              </div>
             </div>
-
-            {/* Support */}
-            <div>
-              <h3 className="font-semibold text-foreground mb-4">Support</h3>
-              <ul className="space-y-2">
-                <li>
-                  <button
-                    onClick={() => handleLinkClick("help")}
-                    className="text-muted-foreground hover:text-accent transition-colors text-left"
-                  >
-                    Help Center
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={openDiscord}
-                    className="text-muted-foreground hover:text-accent transition-colors text-left"
-                  >
-                    Contact Us
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => setShowLiveChat(true)}
-                    className="text-muted-foreground hover:text-accent transition-colors text-left"
-                  >
-                    Live Chat
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={openDiscord}
-                    className="text-muted-foreground hover:text-accent transition-colors text-left"
-                  >
-                    Report Issue
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={openDiscord}
-                    className="text-muted-foreground hover:text-accent transition-colors text-left"
-                  >
-                    Community
-                  </button>
-                </li>
-              </ul>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-purple-500/10 rounded-full flex items-center justify-center">
+                <HeadphonesIcon className="w-6 h-6 text-purple-500" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-white">24/7 Support</h4>
+                <p className="text-sm text-gray-400">Dedicated support</p>
+              </div>
             </div>
-
-            {/* Newsletter */}
-            <div>
-              <h3 className="font-semibold text-foreground mb-4">Stay Updated</h3>
-              <p className="text-muted-foreground mb-4">Get the latest deals and updates delivered to your inbox.</p>
-              <form onSubmit={handleEmailSubmit} className="flex space-x-2">
-                <Input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="bg-input border-border"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <Button type="submit" className="bg-gradient-primary hover:opacity-90">
-                  <Mail className="w-4 h-4" />
-                </Button>
-              </form>
-            </div>
-          </div>
-
-          <div className="border-t border-border mt-8 pt-8">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <p className="text-muted-foreground text-sm">© 2025 Deluxo Marketplace. All rights reserved.</p>
-              <div className="flex space-x-6 mt-4 md:mt-0">
-                <button
-                  onClick={() => handleLinkClick("privacy")}
-                  className="text-muted-foreground hover:text-accent text-sm transition-colors"
-                >
-                  Privacy Policy
-                </button>
-                <button
-                  onClick={() => handleLinkClick("terms")}
-                  className="text-muted-foreground hover:text-accent text-sm transition-colors"
-                >
-                  Terms of Service
-                </button>
-                <button
-                  onClick={() => handleLinkClick("cookies")}
-                  className="text-muted-foreground hover:text-accent text-sm transition-colors"
-                >
-                  Cookie Policy
-                </button>
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 bg-orange-500/10 rounded-full flex items-center justify-center">
+                <CreditCard className="w-6 h-6 text-orange-500" />
+              </div>
+              <div>
+                <h4 className="font-semibold text-white">Easy Returns</h4>
+                <p className="text-sm text-gray-400">30 day returns</p>
               </div>
             </div>
           </div>
         </div>
-      </footer>
+      </div>
 
-      {showLiveChat && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-card border border-border rounded-lg p-6 max-w-md w-full glass-card">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-foreground">Live Chat Support</h3>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowLiveChat(false)}
-                className="text-muted-foreground hover:text-foreground"
-              >
-                ✕
-              </Button>
-            </div>
-            <p className="text-muted-foreground mb-4">
-              Get instant support from our team! Join our Discord server for live chat assistance.
+      {/* Main footer content */}
+      <div className="container mx-auto px-4 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
+          {/* Company Info */}
+          <div className="lg:col-span-2">
+            <Link href="/" className="flex items-center gap-2 mb-4">
+              <Store className="h-8 w-8 text-red-500" />
+              <span className="font-bold text-xl text-white">TechBuy</span>
+            </Link>
+            <p className="text-gray-400 mb-6 max-w-sm">
+              Albania&apos;s premier online electronics store. Quality products, fast delivery, and exceptional customer service.
             </p>
-            <div className="flex space-x-2">
-              <Button onClick={openDiscord} className="flex-1 bg-gradient-primary hover:opacity-90">
-                <MessageCircle className="w-4 h-4 mr-2" />
-                Join Discord Chat
+            <div className="space-y-3">
+              <div className="flex items-center gap-3 text-gray-400">
+                <MapPin className="w-5 h-5 text-red-500" />
+                <span>Tirana, Albania</span>
+              </div>
+              <div className="flex items-center gap-3 text-gray-400">
+                <Phone className="w-5 h-5 text-red-500" />
+                <span>+355 69 123 4567</span>
+              </div>
+              <div className="flex items-center gap-3 text-gray-400">
+                <Mail className="w-5 h-5 text-red-500" />
+                <span>support@techbuy.al</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h4 className="font-semibold text-white mb-4">{t("footer.customerService")}</h4>
+            <ul className="space-y-3">
+              <li>
+                <Link href="/contact" className="text-gray-400 hover:text-red-400 transition-colors">
+                  {t("footer.contactUs")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/faq" className="text-gray-400 hover:text-red-400 transition-colors">
+                  {t("footer.faq")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/shipping" className="text-gray-400 hover:text-red-400 transition-colors">
+                  {t("footer.shippingInfo")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/returns" className="text-gray-400 hover:text-red-400 transition-colors">
+                  {t("footer.returns")}
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* About */}
+          <div>
+            <h4 className="font-semibold text-white mb-4">{t("footer.aboutUs")}</h4>
+            <ul className="space-y-3">
+              <li>
+                <Link href="/about" className="text-gray-400 hover:text-red-400 transition-colors">
+                  {t("footer.aboutUs")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy" className="text-gray-400 hover:text-red-400 transition-colors">
+                  {t("footer.privacyPolicy")}
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="text-gray-400 hover:text-red-400 transition-colors">
+                  {t("footer.termsOfService")}
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          {/* Newsletter */}
+          <div>
+            <h4 className="font-semibold text-white mb-4">{t("footer.newsletter")}</h4>
+            <p className="text-gray-400 text-sm mb-4">
+              {t("footer.newsletterDesc")}
+            </p>
+            <form onSubmit={handleNewsletterSubmit} className="space-y-3">
+              <Input
+                type="email"
+                placeholder={t("footer.emailPlaceholder")}
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="bg-gray-800 border-gray-700 text-white placeholder:text-gray-500"
+              />
+              <Button type="submit" className="w-full bg-red-500 hover:bg-red-600">
+                {t("footer.subscribe")}
               </Button>
-              <Button variant="outline" onClick={() => setShowLiveChat(false)} className="border-border">
-                Cancel
-              </Button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom bar */}
+      <div className="border-t border-gray-800">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-gray-400 text-sm">
+              &copy; {new Date().getFullYear()} Klevin Goci. {t("footer.allRightsReserved")}
+            </p>
+            <div className="flex items-center gap-4">
+              <a
+                href="https://facebook.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-blue-500 transition-colors"
+              >
+                <Facebook className="w-5 h-5" />
+              </a>
+              <a
+                href="https://instagram.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-pink-500 transition-colors"
+              >
+                <Instagram className="w-5 h-5" />
+              </a>
+              <a
+                href="https://twitter.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-blue-400 transition-colors"
+              >
+                <Twitter className="w-5 h-5" />
+              </a>
+              <a
+                href="https://youtube.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-red-500 transition-colors"
+              >
+                <Youtube className="w-5 h-5" />
+              </a>
             </div>
           </div>
         </div>
-      )}
-    </>
+      </div>
+    </footer>
   )
 }

@@ -19,7 +19,7 @@ export default function SafetySecurityPage() {
     {
       icon: <Users className="w-8 h-8" />,
       title: "Trusted Community",
-      description: "Join thousands of satisfied customers who trust Deluxo Marketplace for their gaming needs.",
+      description: "Join thousands of satisfied customers who trust TechBuy for their gaming needs.",
     },
     {
       icon: <Clock className="w-8 h-8" />,

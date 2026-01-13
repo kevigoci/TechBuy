@@ -120,7 +120,7 @@ export default function PricingPage() {
 
         {/* Additional Info */}
         <div className="glass-card p-8 text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Why Choose Deluxo Marketplace?</h2>
+          <h2 className="text-3xl font-bold text-white mb-4">Why Choose TechBuy?</h2>
           <div className="grid md:grid-cols-4 gap-6 mt-8">
             <div>
               <div className="text-3xl font-bold text-purple-400 mb-2">5000+</div>
