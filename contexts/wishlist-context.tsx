@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, useEffect, type ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, type ReactNode, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from './auth-context'
 import type { Product, ProductImage } from '@/types/database'
@@ -28,6 +28,12 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
   const { user } = useAuth()
   const supabase = createClient()
+
+  // Create a Set of product IDs for O(1) lookup
+  const wishlistIds = useMemo(() =>
+    new Set(items.map(item => item.product_id)),
+    [items]
+  )
 
   useEffect(() => {
     if (user) {
@@ -60,11 +66,11 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     setIsLoading(false)
   }
 
-  const isInWishlist = (productId: string): boolean => {
-    return items.some(item => item.product_id === productId)
-  }
+  const isInWishlist = useCallback((productId: string): boolean => {
+    return wishlistIds.has(productId)
+  }, [wishlistIds])
 
-  const addToWishlist = async (productId: string) => {
+  const addToWishlist = useCallback(async (productId: string) => {
     if (!user) {
       toast.error('Please sign in to add items to your wishlist')
       return
@@ -81,9 +87,9 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
 
     await fetchWishlist()
     toast.success('Added to wishlist')
-  }
+  }, [user])
 
-  const removeFromWishlist = async (productId: string) => {
+  const removeFromWishlist = useCallback(async (productId: string) => {
     if (!user) return
 
     const { error } = await supabase
@@ -97,29 +103,29 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       return
     }
 
-    setItems(items.filter(item => item.product_id !== productId))
+    setItems(prev => prev.filter(item => item.product_id !== productId))
     toast.success('Removed from wishlist')
-  }
+  }, [user])
 
-  const toggleWishlist = async (productId: string) => {
-    if (isInWishlist(productId)) {
+  const toggleWishlist = useCallback(async (productId: string) => {
+    if (wishlistIds.has(productId)) {
       await removeFromWishlist(productId)
     } else {
       await addToWishlist(productId)
     }
-  }
+  }, [wishlistIds, removeFromWishlist, addToWishlist])
+
+  const contextValue = useMemo(() => ({
+    items,
+    isLoading,
+    isInWishlist,
+    addToWishlist,
+    removeFromWishlist,
+    toggleWishlist,
+  }), [items, isLoading, isInWishlist, addToWishlist, removeFromWishlist, toggleWishlist])
 
   return (
-    <WishlistContext.Provider
-      value={{
-        items,
-        isLoading,
-        isInWishlist,
-        addToWishlist,
-        removeFromWishlist,
-        toggleWishlist,
-      }}
-    >
+    <WishlistContext.Provider value={contextValue}>
       {children}
     </WishlistContext.Provider>
   )

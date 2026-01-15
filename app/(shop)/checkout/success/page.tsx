@@ -1,13 +1,14 @@
 "use client"
 
+import { Suspense } from "react"
 import { useSearchParams } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { useLanguage } from "@/contexts/language-context"
-import { CheckCircle, Package, ArrowRight, Home } from "lucide-react"
+import { CheckCircle, Package, ArrowRight, Home, Loader2 } from "lucide-react"
 
-export default function CheckoutSuccessPage() {
+function CheckoutSuccessContent() {
   const searchParams = useSearchParams()
   const orderNumber = searchParams.get("order") || "UNKNOWN"
   const { t, locale } = useLanguage()
@@ -56,5 +57,19 @@ export default function CheckoutSuccessPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function CheckoutSuccessPage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto px-4 py-16">
+        <div className="max-w-md mx-auto text-center">
+          <Loader2 className="h-12 w-12 animate-spin text-red-500 mx-auto" />
+        </div>
+      </div>
+    }>
+      <CheckoutSuccessContent />
+    </Suspense>
   )
 }

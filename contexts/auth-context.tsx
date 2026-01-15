@@ -1,9 +1,10 @@
 "use client"
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, useCallback, useMemo, type ReactNode } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import type { User, Session } from '@supabase/supabase-js'
 import type { Profile } from '@/types/database'
+import { useRouter } from 'next/navigation'
 
 interface AuthContextType {
   user: User | null
@@ -25,21 +26,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<Profile | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const router = useRouter()
 
-  const supabase = createClient()
+  // Create supabase client once
+  const supabase = useMemo(() => createClient(), [])
+
+  const fetchProfile = useCallback(async (userId: string) => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', userId)
+      .single()
+
+    if (data) {
+      setProfile(data)
+    }
+  }, [supabase])
 
   useEffect(() => {
     // Get initial session
     const getInitialSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setSession(session)
-      setUser(session?.user ?? null)
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        setSession(session)
+        setUser(session?.user ?? null)
 
-      if (session?.user) {
-        await fetchProfile(session.user.id)
+        if (session?.user) {
+          await fetchProfile(session.user.id)
+        }
+      } catch (error) {
+        console.error('Error getting session:', error)
+      } finally {
+        setIsLoading(false)
       }
-
-      setIsLoading(false)
     }
 
     getInitialSession()
@@ -47,10 +66,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state changed:', event)
         setSession(session)
         setUser(session?.user ?? null)
 
-        if (session?.user) {
+        if (event === 'SIGNED_OUT') {
+          setProfile(null)
+          setUser(null)
+          setSession(null)
+        } else if (session?.user) {
           await fetchProfile(session.user.id)
         } else {
           setProfile(null)
@@ -63,21 +87,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => {
       subscription.unsubscribe()
     }
-  }, [])
+  }, [supabase, fetchProfile])
 
-  const fetchProfile = async (userId: string) => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', userId)
-      .single()
-
-    if (data) {
-      setProfile(data)
-    }
-  }
-
-  const signUp = async (email: string, password: string, fullName: string) => {
+  const signUp = useCallback(async (email: string, password: string, fullName: string) => {
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -89,39 +101,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
 
     return { error: error ? new Error(error.message) : null }
-  }
+  }, [supabase])
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = useCallback(async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
 
     return { error: error ? new Error(error.message) : null }
-  }
+  }, [supabase])
 
-  const signOut = async () => {
-    await supabase.auth.signOut()
+  const signOut = useCallback(async () => {
+    // Clear state first for immediate UI update
     setUser(null)
     setProfile(null)
     setSession(null)
-  }
 
-  const resetPassword = async (email: string) => {
+    // Then sign out from Supabase
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      console.error('Sign out error:', error)
+    }
+
+    // Force refresh to clear any cached state
+    router.refresh()
+  }, [supabase, router])
+
+  const resetPassword = useCallback(async (email: string) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     })
 
     return { error: error ? new Error(error.message) : null }
-  }
+  }, [supabase])
 
-  const updatePassword = async (password: string) => {
+  const updatePassword = useCallback(async (password: string) => {
     const { error } = await supabase.auth.updateUser({ password })
 
     return { error: error ? new Error(error.message) : null }
-  }
+  }, [supabase])
 
-  const updateProfile = async (data: Partial<Profile>) => {
+  const updateProfile = useCallback(async (data: Partial<Profile>) => {
     if (!user) return { error: new Error('Not authenticated') }
 
     const { error } = await supabase
@@ -134,23 +155,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     return { error: error ? new Error(error.message) : null }
-  }
+  }, [supabase, user, profile])
+
+  const contextValue = useMemo(() => ({
+    user,
+    profile,
+    session,
+    isLoading,
+    signUp,
+    signIn,
+    signOut,
+    resetPassword,
+    updatePassword,
+    updateProfile,
+  }), [user, profile, session, isLoading, signUp, signIn, signOut, resetPassword, updatePassword, updateProfile])
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        profile,
-        session,
-        isLoading,
-        signUp,
-        signIn,
-        signOut,
-        resetPassword,
-        updatePassword,
-        updateProfile,
-      }}
-    >
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   )

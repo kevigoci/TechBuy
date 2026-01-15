@@ -83,7 +83,9 @@ export default function CartPage() {
                           src={primaryImage}
                           alt={item.product.name_en}
                           fill
+                          sizes="(max-width: 768px) 96px, 128px"
                           className="object-cover"
+                          loading="lazy"
                         />
                       </div>
                     </Link>

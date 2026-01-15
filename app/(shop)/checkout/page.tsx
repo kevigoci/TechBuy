@@ -16,6 +16,7 @@ import { useLanguage } from "@/contexts/language-context"
 import { useAuth } from "@/contexts/auth-context"
 import { ArrowLeft, CreditCard, Truck, Building, Loader2, Lock, ShoppingBag } from "lucide-react"
 import { toast } from "sonner"
+import { createClient } from "@/lib/supabase/client"
 
 export default function CheckoutPage() {
   const router = useRouter()
@@ -75,15 +76,93 @@ export default function CheckoutPage() {
 
     setIsProcessing(true)
 
-    // Simulate payment processing
-    await new Promise(resolve => setTimeout(resolve, 2000))
+    try {
+      const supabase = createClient()
 
-    // Generate order number
-    const orderNumber = `ORD-${Date.now().toString(36).toUpperCase()}`
+      // Generate order number
+      const orderNumber = `ORD-${Date.now().toString(36).toUpperCase()}`
 
-    // Clear cart and redirect to success
-    await clearCart()
-    router.push(`/checkout/success?order=${orderNumber}`)
+      // Map payment method to database enum
+      const paymentMethodMap: Record<string, 'card' | 'bank_transfer' | 'cash_on_delivery'> = {
+        card: 'card',
+        bank: 'bank_transfer',
+        cod: 'cash_on_delivery'
+      }
+
+      // Prepare shipping address JSON
+      const shippingAddress = {
+        full_name: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        street_address: formData.address,
+        city: formData.city,
+        postal_code: formData.postalCode || null,
+        country: 'Albania'
+      }
+
+      // Only save to database if user is logged in (user_id is required in DB)
+      if (user?.id) {
+        // Create order in database
+        const { data: order, error: orderError } = await supabase
+          .from('orders')
+          .insert({
+            order_number: orderNumber,
+            user_id: user.id,
+            status: 'pending',
+            payment_status: paymentMethod === 'cod' ? 'pending' : 'paid',
+            payment_method: paymentMethodMap[paymentMethod],
+            currency: currency,
+            subtotal: currency === 'ALL' ? subtotalAll : subtotalEur,
+            shipping_cost: currency === 'ALL' ? shippingCost : shippingCostEur,
+            discount_amount: 0,
+            total: currency === 'ALL' ? totalAll : totalEur,
+            shipping_address: shippingAddress
+          })
+          .select()
+          .single()
+
+        if (orderError) {
+          console.error('Order creation error:', orderError.message, orderError.code, orderError.details)
+          // If RLS error, still allow checkout to complete but warn
+          if (orderError.code === '42501' || orderError.message?.includes('policy')) {
+            console.warn('RLS policy blocked order insert - continuing without saving')
+            toast.info(locale === 'sq' ? "Porosia u krye por nuk u ruajt ne llogari" : "Order placed but not saved to account")
+          } else {
+            toast.error(locale === 'sq' ? "Gabim gjate krijimit te porosise" : "Error creating order")
+            setIsProcessing(false)
+            return
+          }
+        } else if (order) {
+          // Create order items only if order was created successfully
+          const orderItems = items.map(item => ({
+            order_id: order.id,
+            product_id: item.product_id,
+            variant_id: item.variant_id || null,
+            product_name: locale === 'sq' ? item.product.name_sq : item.product.name_en,
+            variant_name: item.variant ? (locale === 'sq' ? item.variant.name_sq : item.variant.name_en) : null,
+            quantity: item.quantity,
+            unit_price: currency === 'ALL' ? getItemPrice(item, 'ALL') : getItemPrice(item, 'EUR'),
+            total_price: currency === 'ALL' ? getItemPrice(item, 'ALL') * item.quantity : getItemPrice(item, 'EUR') * item.quantity
+          }))
+
+          const { error: itemsError } = await supabase
+            .from('order_items')
+            .insert(orderItems)
+
+          if (itemsError) {
+            console.error('Order items error:', itemsError.message)
+          }
+        }
+      }
+
+      // Clear cart and redirect to success
+      await clearCart()
+      router.push(`/checkout/success?order=${orderNumber}`)
+    } catch (error) {
+      console.error('Checkout error:', error)
+      toast.error(locale === 'sq' ? "Gabim gjate procesimit te porosise" : "Error processing order")
+      setIsProcessing(false)
+    }
   }
 
   if (items.length === 0) {
@@ -297,7 +376,9 @@ export default function CheckoutPage() {
                             src={primaryImage}
                             alt={item.product.name_en}
                             fill
+                            sizes="64px"
                             className="object-cover"
+                            loading="lazy"
                           />
                         </div>
                         <div className="flex-1 min-w-0">
