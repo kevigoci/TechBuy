@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState, useEffect, type ReactNode, useCallback, useRef } from "react"
+import React, { createContext, useContext, useState, useEffect, type ReactNode, useCallback, useRef, useMemo } from "react"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
 import type { Product, ProductVariant, ProductImage } from "@/types/database"
@@ -107,8 +107,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const itemKey = variant ? `${product.id}-${variant.id}` : product.id
     const now = Date.now()
 
-    // Prevent duplicate calls within 1000ms
-    if (lastAddedRef.current.item === itemKey && now - lastAddedRef.current.time < 1000) {
+    // Prevent duplicate calls within 300ms (reduced from 1000ms for better responsiveness)
+    if (lastAddedRef.current.item === itemKey && now - lastAddedRef.current.time < 300) {
       return
     }
     lastAddedRef.current = { item: itemKey, time: now }
@@ -192,30 +192,36 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return currency === 'ALL' ? item.product.price_all : item.product.price_eur
   }
 
-  const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
+  const itemCount = useMemo(() =>
+    items.reduce((sum, item) => sum + item.quantity, 0),
+    [items]
+  )
 
   // Calculate subtotal in ALL (default)
-  const subtotal = items.reduce((sum, item) => {
-    const price = item.variant ? item.variant.price_all : item.product.price_all
-    return sum + (price * item.quantity)
-  }, 0)
+  const subtotal = useMemo(() =>
+    items.reduce((sum, item) => {
+      const price = item.variant ? item.variant.price_all : item.product.price_all
+      return sum + (price * item.quantity)
+    }, 0),
+    [items]
+  )
+
+  const contextValue = useMemo(() => ({
+    items,
+    itemCount,
+    subtotal,
+    isLoading,
+    isCartOpen,
+    setIsCartOpen,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    clearCart,
+    getItemPrice
+  }), [items, itemCount, subtotal, isLoading, isCartOpen, addToCart, removeFromCart, updateQuantity, clearCart])
 
   return (
-    <CartContext.Provider
-      value={{
-        items,
-        itemCount,
-        subtotal,
-        isLoading,
-        isCartOpen,
-        setIsCartOpen,
-        addToCart,
-        removeFromCart,
-        updateQuantity,
-        clearCart,
-        getItemPrice
-      }}
-    >
+    <CartContext.Provider value={contextValue}>
       {children}
     </CartContext.Provider>
   )

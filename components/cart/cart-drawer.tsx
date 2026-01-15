@@ -61,7 +61,9 @@ export function CartDrawer() {
                           src={primaryImage}
                           alt={locale === 'sq' ? item.product.name_sq : item.product.name_en}
                           fill
+                          sizes="80px"
                           className="object-cover"
+                          loading="lazy"
                         />
                       </div>
                       <div className="flex-1 min-w-0">
