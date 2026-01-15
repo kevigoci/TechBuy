@@ -143,10 +143,12 @@ export const products: Product[] = [
     description_sq: "Takoni Galaxy S24 Ultra, forma supreme e Galaxy Ultra me Galaxy AI. Është dizajn ikonik me kornizë të re titanium.",
     price_all: 149900,
     price_eur: 1299,
+    original_price_all: 169900,
+    original_price_eur: 1449,
     product_images: [
       { image_url: "https://images.unsplash.com/photo-1610945415295-d9bbf067e59c?w=800", is_primary: true },
     ],
-    is_on_sale: false,
+    is_on_sale: true,
     is_in_stock: true,
     rating_average: 4.6,
     rating_count: 178,
@@ -230,10 +232,12 @@ export const products: Product[] = [
     description_sq: "Anulim zhurme lider në industri dhe cilësi e jashtëzakonshme zëri në dizajn ikonik dhe të rehatshëm.",
     price_all: 39900,
     price_eur: 349,
+    original_price_all: 44900,
+    original_price_eur: 399,
     product_images: [
       { image_url: "https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?w=800", is_primary: true },
     ],
-    is_on_sale: false,
+    is_on_sale: true,
     is_in_stock: true,
     rating_average: 4.9,
     rating_count: 567,
@@ -273,10 +277,12 @@ export const products: Product[] = [
     description_sq: "Përjetoni ngarkim si rrufeja me SSD ultra të shpejtë, reagim haptik dhe këmbëza adaptive.",
     price_all: 69900,
     price_eur: 599,
+    original_price_all: 79900,
+    original_price_eur: 699,
     product_images: [
       { image_url: "https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=800", is_primary: true },
     ],
-    is_on_sale: false,
+    is_on_sale: true,
     is_in_stock: true,
     rating_average: 4.9,
     rating_count: 412,
@@ -315,10 +321,12 @@ export const products: Product[] = [
     description_sq: "Me ekran OLED 7 inç të gjallë dhe mbështetëse të rregullueshme të gjerë për modalitetin e tavolinës.",
     price_all: 39900,
     price_eur: 349,
+    original_price_all: 44900,
+    original_price_eur: 389,
     product_images: [
       { image_url: "https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=800", is_primary: true },
     ],
-    is_on_sale: false,
+    is_on_sale: true,
     is_in_stock: true,
     rating_average: 4.7,
     rating_count: 356,
@@ -718,4 +726,9 @@ export function getRelatedProducts(product: Product, limit: number = 4): Product
   return products
     .filter(p => p.category === product.category && p.id !== product.id)
     .slice(0, limit)
+}
+
+export function getProductsOnSale(limit?: number): Product[] {
+  const saleProducts = products.filter(p => p.is_on_sale && p.original_price_all)
+  return limit ? saleProducts.slice(0, limit) : saleProducts
 }

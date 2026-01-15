@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -38,6 +38,36 @@ export default function CheckoutPage() {
     expiryDate: "",
     cvv: "",
   })
+
+  // Fetch user profile and default address to pre-fill form
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user?.id) return
+
+      const supabase = createClient()
+
+      // Fetch profile and default address in parallel
+      const [profileRes, addressRes] = await Promise.all([
+        supabase.from('profiles').select('*').eq('id', user.id).single(),
+        supabase.from('addresses').select('*').eq('user_id', user.id).eq('is_default', true).single()
+      ])
+
+      const profile = profileRes.data
+      const address = addressRes.data
+
+      setFormData(prev => ({
+        ...prev,
+        fullName: address?.full_name || profile?.full_name || prev.fullName,
+        email: profile?.email || user.email || prev.email,
+        phone: address?.phone || profile?.phone || prev.phone,
+        address: address?.street_address || prev.address,
+        city: address?.city || prev.city,
+        postalCode: address?.postal_code || prev.postalCode,
+      }))
+    }
+
+    fetchUserData()
+  }, [user])
 
   const subtotalAll = items.reduce((sum, item) => {
     const price = getItemPrice(item, 'ALL')

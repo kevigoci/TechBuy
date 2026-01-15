@@ -1,7 +1,8 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -39,37 +40,106 @@ import { useCart } from "@/contexts/cart-context"
 import { useWishlist } from "@/contexts/wishlist-context"
 import { useLanguage } from "@/contexts/language-context"
 import { useCurrency } from "@/contexts/currency-context"
+import { products, getProductsByCategory, getProductsOnSale, categories as productCategories } from "@/lib/products-data"
 
-const categories = [
-  { name: "computers", icon: Laptop, href: "/categories/computers" },
-  { name: "phones", icon: Smartphone, href: "/categories/phones" },
-  { name: "tv", icon: Tv, href: "/categories/tv-audio" },
-  { name: "gaming", icon: Gamepad2, href: "/categories/gaming" },
-  { name: "smartHome", icon: Home, href: "/categories/smart-home" },
-  { name: "accessories", icon: Headphones, href: "/categories/accessories" },
+const navCategories = [
+  { id: "computers", name: "computers", icon: Laptop, href: "/categories/computers" },
+  { id: "phones", name: "phones", icon: Smartphone, href: "/categories/phones" },
+  { id: "tv", name: "tv", icon: Tv, href: "/categories/tv" },
+  { id: "gaming", name: "gaming", icon: Gamepad2, href: "/categories/gaming" },
+  { id: "accessories", name: "accessories", icon: Headphones, href: "/categories/accessories" },
 ]
+
+const categoryIcons: Record<string, typeof Laptop> = {
+  computers: Laptop,
+  phones: Smartphone,
+  tv: Tv,
+  gaming: Gamepad2,
+  accessories: Headphones,
+}
 
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
+  const [searchResults, setSearchResults] = useState<typeof products>([])
+  const [showSearchResults, setShowSearchResults] = useState(false)
+  const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false)
+  const searchRef = useRef<HTMLDivElement>(null)
+  const categoryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+
   const router = useRouter()
   const { user, profile, signOut } = useAuth()
   const { itemCount, setIsCartOpen } = useCart()
   const { items: wishlistItems } = useWishlist()
   const { locale, setLocale, t } = useLanguage()
-  const { currency, setCurrency } = useCurrency()
+  const { currency, setCurrency, formatPrice } = useCurrency()
+
+  // Search functionality
+  useEffect(() => {
+    if (searchQuery.length >= 2) {
+      const query = searchQuery.toLowerCase()
+      const results = products.filter(p =>
+        p.name_en.toLowerCase().includes(query) ||
+        p.name_sq.toLowerCase().includes(query) ||
+        p.brand.toLowerCase().includes(query) ||
+        p.category.toLowerCase().includes(query)
+      ).slice(0, 6)
+      setSearchResults(results)
+      setShowSearchResults(true)
+    } else {
+      setSearchResults([])
+      setShowSearchResults(false)
+    }
+  }, [searchQuery])
+
+  // Close search on click outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSearchResults(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery)}`)
+      router.push(`/products?search=${encodeURIComponent(searchQuery)}`)
+      setShowSearchResults(false)
+      setSearchQuery("")
     }
+  }
+
+  const handleSearchSelect = (slug: string) => {
+    router.push(`/products/${slug}`)
+    setShowSearchResults(false)
+    setSearchQuery("")
   }
 
   const handleSignOut = async () => {
     await signOut()
     router.push("/")
   }
+
+  const handleCategoryHover = (categoryId: string | null) => {
+    if (categoryTimeoutRef.current) {
+      clearTimeout(categoryTimeoutRef.current)
+    }
+    if (categoryId) {
+      setHoveredCategory(categoryId)
+      setShowCategoryDropdown(true)
+    } else {
+      categoryTimeoutRef.current = setTimeout(() => {
+        setShowCategoryDropdown(false)
+        setHoveredCategory(null)
+      }, 150)
+    }
+  }
+
+  const categoryProducts = hoveredCategory ? getProductsByCategory(hoveredCategory).slice(0, 4) : []
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
@@ -135,18 +205,59 @@ export function Header() {
           </Link>
 
           {/* Search Bar - Desktop */}
-          <form onSubmit={handleSearch} className="hidden lg:flex flex-1 max-w-xl mx-8">
-            <div className="relative w-full">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
-              <Input
-                type="search"
-                placeholder={t("common.searchPlaceholder")}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 pr-4 py-2 w-full bg-gray-100 border-gray-200 text-gray-900 placeholder:text-gray-500 focus:border-red-500 focus:ring-red-500"
-              />
-            </div>
-          </form>
+          <div ref={searchRef} className="hidden lg:flex flex-1 max-w-xl mx-8 relative">
+            <form onSubmit={handleSearch} className="w-full">
+              <div className="relative w-full">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Input
+                  type="search"
+                  placeholder={t("common.searchPlaceholder")}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onFocus={() => searchQuery.length >= 2 && setShowSearchResults(true)}
+                  className="pl-10 pr-4 py-2 w-full bg-gray-100 border-gray-200 text-gray-900 placeholder:text-gray-500 focus:border-red-500 focus:ring-red-500"
+                />
+              </div>
+            </form>
+
+            {/* Search Suggestions Dropdown */}
+            {showSearchResults && searchResults.length > 0 && (
+              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
+                {searchResults.map((product) => (
+                  <button
+                    key={product.id}
+                    onClick={() => handleSearchSelect(product.slug)}
+                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors text-left"
+                  >
+                    <div className="relative w-12 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                      <Image
+                        src={product.product_images[0]?.image_url || '/placeholder.png'}
+                        alt={product.name_en}
+                        fill
+                        className="object-cover"
+                        sizes="48px"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 text-sm truncate">
+                        {locale === 'sq' ? product.name_sq : product.name_en}
+                      </p>
+                      <p className="text-red-500 text-sm font-semibold">
+                        {formatPrice(product.price_all, product.price_eur)}
+                      </p>
+                    </div>
+                  </button>
+                ))}
+                <Link
+                  href={`/products?search=${encodeURIComponent(searchQuery)}`}
+                  onClick={() => setShowSearchResults(false)}
+                  className="block p-3 text-center text-red-500 font-medium hover:bg-gray-50 border-t border-gray-100"
+                >
+                  {locale === 'sq' ? 'Shiko të gjitha rezultatet' : 'View all results'}
+                </Link>
+              </div>
+            )}
+          </div>
 
           {/* Right Actions */}
           <div className="flex items-center gap-2 sm:gap-4">
@@ -246,8 +357,8 @@ export function Header() {
           </div>
         </div>
 
-        {/* Category Navigation - Desktop */}
-        <nav className="hidden md:flex items-center gap-1 py-2 border-t border-gray-100 overflow-x-auto">
+        {/* Category Navigation - Desktop with Hover Dropdown */}
+        <nav className="hidden md:flex items-center gap-1 py-2 border-t border-gray-100 overflow-x-auto relative">
           <Link href="/categories">
             <Button variant="ghost" size="sm" className="text-gray-700 hover:text-gray-900 hover:bg-gray-100">
               <Menu className="w-4 h-4 mr-2" />
@@ -256,19 +367,78 @@ export function Header() {
           </Link>
           <div className="h-4 w-px bg-gray-200 mx-2" />
           {categories.map((category) => (
-            <Link key={category.name} href={category.href}>
-              <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 hover:bg-gray-100">
-                <category.icon className="w-4 h-4 mr-2" />
-                {t(`nav.${category.name}`)}
-              </Button>
-            </Link>
+            <div
+              key={category.name}
+              className="relative"
+              onMouseEnter={() => handleCategoryHover(category.id)}
+              onMouseLeave={() => handleCategoryHover(null)}
+            >
+              <Link href={category.href}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className={`text-gray-600 hover:text-gray-900 hover:bg-gray-100 ${hoveredCategory === category.id ? 'bg-gray-100' : ''}`}
+                >
+                  <category.icon className="w-4 h-4 mr-2" />
+                  {t(`nav.${category.name}`)}
+                  <ChevronDown className="w-3 h-3 ml-1" />
+                </Button>
+              </Link>
+            </div>
           ))}
-          <Link href="/deals">
+          <Link href="/products?sale=true">
             <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50">
               {t("common.deals")}
             </Button>
           </Link>
         </nav>
+
+        {/* Category Dropdown Preview */}
+        {showCategoryDropdown && hoveredCategory && (
+          <div
+            className="absolute left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40 hidden md:block"
+            onMouseEnter={() => handleCategoryHover(hoveredCategory)}
+            onMouseLeave={() => handleCategoryHover(null)}
+          >
+            <div className="container mx-auto px-4 py-6">
+              <div className="grid grid-cols-4 gap-4">
+                {categoryProducts.map((product) => (
+                  <Link
+                    key={product.id}
+                    href={`/products/${product.slug}`}
+                    className="group flex gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                  >
+                    <div className="relative w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                      <Image
+                        src={product.product_images[0]?.image_url || '/placeholder.png'}
+                        alt={product.name_en}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform"
+                        sizes="64px"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium text-gray-900 text-sm line-clamp-2 group-hover:text-red-500 transition-colors">
+                        {locale === 'sq' ? product.name_sq : product.name_en}
+                      </p>
+                      <p className="text-red-500 text-sm font-semibold mt-1">
+                        {formatPrice(product.price_all, product.price_eur)}
+                      </p>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+              <div className="mt-4 pt-4 border-t border-gray-100 text-center">
+                <Link
+                  href={categories.find(c => c.id === hoveredCategory)?.href || '/categories'}
+                  className="text-red-500 font-medium hover:text-red-600"
+                >
+                  {locale === 'sq' ? 'Shiko të gjitha' : 'View all'} {t(`nav.${hoveredCategory}`)} →
+                </Link>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Mobile Menu */}
