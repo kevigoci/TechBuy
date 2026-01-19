@@ -41,6 +41,7 @@ import { useWishlist } from "@/contexts/wishlist-context"
 import { useLanguage } from "@/contexts/language-context"
 import { useCurrency } from "@/contexts/currency-context"
 import { products, getProductsByCategory, getProductsOnSale, categories as productCategories } from "@/lib/products-data"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 const navCategories = [
   { id: "computers", name: "computers", icon: Laptop, href: "/categories/computers" },
@@ -181,21 +182,21 @@ export function Header() {
   const dealsProducts = getProductsOnSale(6)
 
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
+    <header className="sticky top-0 z-50 bg-background border-b border-border shadow-sm">
       {/* Top bar */}
-      <div className="bg-gray-50 py-2 hidden md:block">
+      <div className="bg-secondary py-2 hidden md:block">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-4 text-gray-600">
+            <div className="flex items-center gap-4 text-muted-foreground">
               <span>Fast delivery across Albania</span>
-              <span className="text-gray-300">|</span>
+              <span className="text-border">|</span>
               <span>24/7 Customer Support</span>
             </div>
             <div className="flex items-center gap-4">
               {/* Language Switcher */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-7 text-gray-600 hover:text-gray-900">
+                  <Button variant="ghost" size="sm" className="h-7 text-muted-foreground hover:text-foreground">
                     <Globe className="h-4 w-4 mr-1" />
                     {locale === "en" ? "EN" : "SQ"}
                     <ChevronDown className="h-3 w-3 ml-1" />
@@ -214,7 +215,7 @@ export function Header() {
               {/* Currency Switcher */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="h-7 text-gray-600 hover:text-gray-900">
+                  <Button variant="ghost" size="sm" className="h-7 text-muted-foreground hover:text-foreground">
                     <DollarSign className="h-4 w-4 mr-1" />
                     {currency}
                     <ChevronDown className="h-3 w-3 ml-1" />
@@ -229,6 +230,9 @@ export function Header() {
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+
+              {/* Theme Toggle */}
+              <ThemeToggle />
             </div>
           </div>
         </div>
@@ -240,7 +244,7 @@ export function Header() {
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <Store className="h-8 w-8 text-red-500" />
-            <span className="font-bold text-xl text-gray-900 hidden sm:block">TechBuy</span>
+            <span className="font-bold text-xl text-foreground hidden sm:block">TechBuy</span>
           </Link>
 
           {/* Search Bar - Desktop */}
@@ -254,21 +258,21 @@ export function Header() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => searchQuery.length >= 2 && setShowSearchResults(true)}
-                  className="pl-10 pr-4 py-2 w-full bg-gray-100 border-gray-200 text-gray-900 placeholder:text-gray-500 focus:border-red-500 focus:ring-red-500"
+                  className="pl-10 pr-4 py-2 w-full bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-red-500 focus:ring-red-500"
                 />
               </div>
             </form>
 
             {/* Search Suggestions Dropdown */}
             {showSearchResults && searchResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg shadow-lg z-50 overflow-hidden">
+              <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg z-50 overflow-hidden">
                 {searchResults.map((product) => (
                   <button
                     key={product.id}
                     onClick={() => handleSearchSelect(product.slug)}
-                    className="w-full flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors text-left"
+                    className="w-full flex items-center gap-3 p-3 hover:bg-secondary transition-colors text-left"
                   >
-                    <div className="relative w-12 h-12 bg-gray-100 rounded overflow-hidden flex-shrink-0">
+                    <div className="relative w-12 h-12 bg-secondary rounded overflow-hidden flex-shrink-0">
                       <Image
                         src={product.product_images[0]?.image_url || '/placeholder.png'}
                         alt={product.name_en}
@@ -278,7 +282,7 @@ export function Header() {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900 text-sm truncate">
+                      <p className="font-medium text-foreground text-sm truncate">
                         {locale === 'sq' ? product.name_sq : product.name_en}
                       </p>
                       <p className="text-red-500 text-sm font-semibold">
@@ -290,7 +294,7 @@ export function Header() {
                 <Link
                   href={`/products?search=${encodeURIComponent(searchQuery)}`}
                   onClick={() => setShowSearchResults(false)}
-                  className="block p-3 text-center text-red-500 font-medium hover:bg-gray-50 border-t border-gray-100"
+                  className="block p-3 text-center text-red-500 font-medium hover:bg-secondary border-t border-border"
                 >
                   {locale === 'sq' ? 'Shiko të gjitha rezultatet' : 'View all results'}
                 </Link>
@@ -302,7 +306,7 @@ export function Header() {
           <div className="flex items-center gap-2 sm:gap-4">
             {/* Wishlist */}
             <Link href="/account/wishlist">
-              <Button variant="ghost" size="icon" className="relative text-gray-600 hover:text-gray-900">
+              <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground">
                 <Heart className="w-5 h-5" />
                 {wishlistItems.length > 0 && (
                   <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
@@ -316,7 +320,7 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="relative text-gray-600 hover:text-gray-900"
+              className="relative text-muted-foreground hover:text-foreground"
               onClick={() => setIsCartOpen(true)}
             >
               <ShoppingCart className="w-5 h-5" />
@@ -331,7 +335,7 @@ export function Header() {
             {user ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900 hidden md:flex">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground hidden md:flex">
                     <User className="w-5 h-5 mr-2" />
                     <span className="max-w-24 truncate">{profile?.full_name || user.email}</span>
                     <ChevronDown className="w-4 h-4 ml-1" />
@@ -372,7 +376,7 @@ export function Header() {
             ) : (
               <div className="hidden md:flex items-center gap-2">
                 <Link href="/login">
-                  <Button variant="ghost" size="sm" className="text-gray-600 hover:text-gray-900">
+                  <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
                     {t("auth.signIn")}
                   </Button>
                 </Link>
@@ -388,7 +392,7 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="md:hidden text-gray-600"
+              className="md:hidden text-muted-foreground"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
               {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -397,20 +401,20 @@ export function Header() {
         </div>
 
         {/* Category Navigation - Desktop with Hover Dropdown */}
-        <nav className="hidden md:flex items-center gap-1 py-2 border-t border-gray-100 overflow-x-auto relative">
+        <nav className="hidden md:flex items-center gap-1 py-2 border-t border-border overflow-x-auto relative">
           <div
             onMouseEnter={() => handleAllCategoriesHover(true)}
             onMouseLeave={() => handleAllCategoriesHover(false)}
           >
             <Link href="/categories">
-              <Button variant="ghost" size="sm" className={`text-gray-700 hover:text-gray-900 hover:bg-gray-100 ${showAllCategories ? 'bg-gray-100' : ''}`}>
+              <Button variant="ghost" size="sm" className={`text-foreground hover:text-foreground hover:bg-secondary ${showAllCategories ? 'bg-secondary' : ''}`}>
                 <Menu className="w-4 h-4 mr-2" />
                 {t("nav.allCategories")}
                 <ChevronDown className="w-3 h-3 ml-1" />
               </Button>
             </Link>
           </div>
-          <div className="h-4 w-px bg-gray-200 mx-2" />
+          <div className="h-4 w-px bg-border mx-2" />
           {navCategories.map((category) => (
             <div
               key={category.name}
@@ -422,7 +426,7 @@ export function Header() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`text-gray-600 hover:text-gray-900 hover:bg-gray-100 ${hoveredCategory === category.id ? 'bg-gray-100' : ''}`}
+                  className={`text-muted-foreground hover:text-foreground hover:bg-secondary ${hoveredCategory === category.id ? 'bg-secondary' : ''}`}
                 >
                   <category.icon className="w-4 h-4 mr-2" />
                   {t(`nav.${category.name}`)}
@@ -436,7 +440,7 @@ export function Header() {
             onMouseLeave={() => handleDealsHover(false)}
           >
             <Link href="/products?sale=true">
-              <Button variant="ghost" size="sm" className={`text-red-500 hover:text-red-600 hover:bg-red-50 ${showDeals ? 'bg-red-50' : ''}`}>
+              <Button variant="ghost" size="sm" className={`text-red-500 hover:text-red-600 hover:bg-red-500/10 ${showDeals ? 'bg-red-500/10' : ''}`}>
                 {t("common.deals")}
                 <ChevronDown className="w-3 h-3 ml-1" />
               </Button>
@@ -447,7 +451,7 @@ export function Header() {
         {/* Category Dropdown Preview */}
         {showCategoryDropdown && hoveredCategory && (
           <div
-            className="absolute left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40 hidden md:block"
+            className="absolute left-0 right-0 bg-card border-t border-border shadow-lg z-40 hidden md:block"
             onMouseEnter={() => handleCategoryHover(hoveredCategory)}
             onMouseLeave={() => handleCategoryHover(null)}
           >
@@ -457,9 +461,9 @@ export function Header() {
                   <Link
                     key={product.id}
                     href={`/products/${product.slug}`}
-                    className="group flex gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="group flex gap-3 p-3 rounded-lg hover:bg-secondary transition-colors"
                   >
-                    <div className="relative w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="relative w-16 h-16 bg-secondary rounded-lg overflow-hidden flex-shrink-0">
                       <Image
                         src={product.product_images[0]?.image_url || '/placeholder.png'}
                         alt={product.name_en}
@@ -469,7 +473,7 @@ export function Header() {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-gray-900 text-sm line-clamp-2 group-hover:text-red-500 transition-colors">
+                      <p className="font-medium text-foreground text-sm line-clamp-2 group-hover:text-red-500 transition-colors">
                         {locale === 'sq' ? product.name_sq : product.name_en}
                       </p>
                       <p className="text-red-500 text-sm font-semibold mt-1">
@@ -479,7 +483,7 @@ export function Header() {
                   </Link>
                 ))}
               </div>
-              <div className="mt-4 pt-4 border-t border-gray-100 text-center">
+              <div className="mt-4 pt-4 border-t border-border text-center">
                 <Link
                   href={navCategories.find(c => c.id === hoveredCategory)?.href || '/categories'}
                   className="text-red-500 font-medium hover:text-red-600"
@@ -494,7 +498,7 @@ export function Header() {
         {/* All Categories Dropdown */}
         {showAllCategories && (
           <div
-            className="absolute left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40 hidden md:block"
+            className="absolute left-0 right-0 bg-card border-t border-border shadow-lg z-40 hidden md:block"
             onMouseEnter={() => handleAllCategoriesHover(true)}
             onMouseLeave={() => handleAllCategoriesHover(false)}
           >
@@ -507,7 +511,7 @@ export function Header() {
                     <div key={category.id} className="space-y-3">
                       <Link
                         href={`/categories/${category.id}`}
-                        className="flex items-center gap-2 font-semibold text-gray-900 hover:text-red-500 transition-colors"
+                        className="flex items-center gap-2 font-semibold text-foreground hover:text-red-500 transition-colors"
                       >
                         <IconComponent className="w-5 h-5" />
                         {locale === 'sq' ? category.name_sq : category.name_en}
@@ -517,7 +521,7 @@ export function Header() {
                           <Link
                             key={product.id}
                             href={`/products/${product.slug}`}
-                            className="block text-sm text-gray-600 hover:text-red-500 transition-colors truncate"
+                            className="block text-sm text-muted-foreground hover:text-red-500 transition-colors truncate"
                           >
                             {locale === 'sq' ? product.name_sq : product.name_en}
                           </Link>
@@ -540,13 +544,13 @@ export function Header() {
         {/* Deals Dropdown */}
         {showDeals && (
           <div
-            className="absolute left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40 hidden md:block"
+            className="absolute left-0 right-0 bg-card border-t border-border shadow-lg z-40 hidden md:block"
             onMouseEnter={() => handleDealsHover(true)}
             onMouseLeave={() => handleDealsHover(false)}
           >
             <div className="container mx-auto px-4 py-6">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-gray-900">
+                <h3 className="text-lg font-bold text-foreground">
                   {locale === 'sq' ? 'Ofertat e Ditës' : 'Today\'s Deals'}
                 </h3>
                 <Link href="/products?sale=true" className="text-red-500 font-medium hover:text-red-600">
@@ -564,7 +568,7 @@ export function Header() {
                       href={`/products/${product.slug}`}
                       className="group text-center"
                     >
-                      <div className="relative w-full aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2">
+                      <div className="relative w-full aspect-square bg-secondary rounded-lg overflow-hidden mb-2">
                         <Image
                           src={product.product_images[0]?.image_url || '/placeholder.png'}
                           alt={product.name_en}
@@ -578,7 +582,7 @@ export function Header() {
                           </span>
                         )}
                       </div>
-                      <p className="font-medium text-gray-900 text-sm line-clamp-2 group-hover:text-red-500 transition-colors">
+                      <p className="font-medium text-foreground text-sm line-clamp-2 group-hover:text-red-500 transition-colors">
                         {locale === 'sq' ? product.name_sq : product.name_en}
                       </p>
                       <div className="mt-1">
@@ -586,7 +590,7 @@ export function Header() {
                           {formatPrice(product.price_all, product.price_eur)}
                         </span>
                         {product.original_price_all && (
-                          <span className="text-gray-400 text-sm line-through ml-2">
+                          <span className="text-muted-foreground text-sm line-through ml-2">
                             {formatPrice(product.original_price_all, product.original_price_eur || 0)}
                           </span>
                         )}
@@ -602,18 +606,18 @@ export function Header() {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="md:hidden bg-white border-t border-gray-200">
+        <div className="md:hidden bg-card border-t border-border">
           <div className="container mx-auto px-4 py-4 space-y-4">
             {/* Mobile Search */}
             <form onSubmit={handleSearch}>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-5 h-5" />
                 <Input
                   type="search"
                   placeholder={t("common.searchPlaceholder")}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-gray-100 border-gray-200 text-gray-900"
+                  className="pl-10 bg-secondary border-border text-foreground"
                 />
               </div>
             </form>
@@ -625,7 +629,7 @@ export function Header() {
                   key={category.name}
                   href={category.href}
                   onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg text-gray-700 hover:bg-gray-100"
+                  className="flex items-center gap-2 p-3 bg-secondary rounded-lg text-foreground hover:bg-secondary/80"
                 >
                   <category.icon className="w-5 h-5" />
                   <span>{t(`nav.${category.name}`)}</span>
@@ -634,7 +638,7 @@ export function Header() {
               <Link
                 href="/products?sale=true"
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center gap-2 p-3 bg-red-50 rounded-lg text-red-500 hover:bg-red-100 col-span-2"
+                className="flex items-center gap-2 p-3 bg-red-500/10 rounded-lg text-red-500 hover:bg-red-500/20 col-span-2"
               >
                 <span className="font-medium">{t("common.deals")}</span>
               </Link>
@@ -642,11 +646,11 @@ export function Header() {
 
             {/* Mobile Auth */}
             {user ? (
-              <div className="space-y-2 pt-4 border-t border-gray-200">
+              <div className="space-y-2 pt-4 border-t border-border">
                 <Link
                   href="/account"
                   onClick={() => setIsMenuOpen(false)}
-                  className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg text-gray-700"
+                  className="flex items-center gap-2 p-3 bg-secondary rounded-lg text-foreground"
                 >
                   <User className="w-5 h-5" />
                   {t("account.myAccount")}
@@ -664,9 +668,9 @@ export function Header() {
                 </Button>
               </div>
             ) : (
-              <div className="flex gap-2 pt-4 border-t border-gray-200">
+              <div className="flex gap-2 pt-4 border-t border-border">
                 <Link href="/login" className="flex-1" onClick={() => setIsMenuOpen(false)}>
-                  <Button variant="outline" className="w-full border-gray-300">
+                  <Button variant="outline" className="w-full border-border">
                     {t("auth.signIn")}
                   </Button>
                 </Link>
@@ -678,13 +682,13 @@ export function Header() {
               </div>
             )}
 
-            {/* Mobile Language/Currency */}
-            <div className="flex gap-4 pt-4 border-t border-gray-200">
+            {/* Mobile Language/Currency/Theme */}
+            <div className="flex gap-4 pt-4 border-t border-border">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setLocale(locale === "en" ? "sq" : "en")}
-                className="text-gray-600"
+                className="text-muted-foreground"
               >
                 <Globe className="w-4 h-4 mr-2" />
                 {locale === "en" ? "EN" : "SQ"}
@@ -693,11 +697,12 @@ export function Header() {
                 variant="ghost"
                 size="sm"
                 onClick={() => setCurrency(currency === "ALL" ? "EUR" : "ALL")}
-                className="text-gray-600"
+                className="text-muted-foreground"
               >
                 <DollarSign className="w-4 h-4 mr-2" />
                 {currency}
               </Button>
+              <ThemeToggle />
             </div>
           </div>
         </div>
