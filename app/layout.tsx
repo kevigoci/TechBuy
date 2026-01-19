@@ -6,6 +6,7 @@ import { LanguageProvider } from "@/contexts/language-context"
 import { CurrencyProvider } from "@/contexts/currency-context"
 import { CartProvider } from "@/contexts/cart-context"
 import { WishlistProvider } from "@/contexts/wishlist-context"
+import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "sonner"
 import "./globals.css"
 
@@ -34,25 +35,32 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased bg-white`}>
-        <AuthProvider>
-          <LanguageProvider>
-            <CurrencyProvider>
-              <CartProvider>
-                <WishlistProvider>
-                  {children}
-                  <Toaster
-                    theme="light"
-                    position="top-right"
-                    expand={true}
-                    richColors
-                    closeButton
-                  />
-                </WishlistProvider>
-              </CartProvider>
-            </CurrencyProvider>
-          </LanguageProvider>
-        </AuthProvider>
+      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased bg-background`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem={false}
+          disableTransitionOnChange
+        >
+          <AuthProvider>
+            <LanguageProvider>
+              <CurrencyProvider>
+                <CartProvider>
+                  <WishlistProvider>
+                    {children}
+                    <Toaster
+                      theme="system"
+                      position="top-right"
+                      expand={true}
+                      richColors
+                      closeButton
+                    />
+                  </WishlistProvider>
+                </CartProvider>
+              </CurrencyProvider>
+            </LanguageProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
