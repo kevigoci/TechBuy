@@ -50,7 +50,7 @@ const featuredBrands = [
 const quickCategories = [
   { name_en: "Laptops", name_sq: "Laptopë", icon: Laptop, href: "/categories/computers", color: "from-blue-500 to-cyan-500" },
   { name_en: "Phones", name_sq: "Celular", icon: Smartphone, href: "/categories/phones", color: "from-purple-500 to-pink-500" },
-  { name_en: "TV & Audio", name_sq: "TV & Audio", icon: Tv, href: "/categories/tv", color: "from-orange-500 to-violet-500" },
+  { name_en: "TV & Audio", name_sq: "TV & Audio", icon: Tv, href: "/categories/tv", color: "from-orange-500 to-red-500" },
   { name_en: "Gaming", name_sq: "Gaming", icon: Gamepad2, href: "/categories/gaming", color: "from-green-500 to-emerald-500" },
   { name_en: "Accessories", name_sq: "Aksesorë", icon: Headphones, href: "/categories/accessories", color: "from-indigo-500 to-purple-500" },
 ]
@@ -125,7 +125,7 @@ export default function HomePage() {
   const currentProducts = getTabProducts()
 
   const getBadgeStyle = (product: typeof products[0]) => {
-    if (product.is_on_sale) return "bg-violet-500 text-white"
+    if (product.is_on_sale) return "bg-red-500 text-white"
     if (product.rating_average >= 4.8) return "bg-purple-500 text-white"
     return "bg-green-500 text-white"
   }
@@ -142,7 +142,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Search Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 dark:from-indigo-600 dark:via-purple-600 dark:to-pink-600">
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600 dark:from-blue-700 dark:via-blue-600 dark:to-purple-700">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
@@ -177,7 +177,7 @@ export default function HomePage() {
                   />
                   <Button
                     type="submit"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-violet-500 hover:bg-violet-600 text-white rounded-full px-6 py-2 transition-all duration-200 hover:scale-105"
+                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-red-500 hover:bg-violet-600 text-white rounded-full px-6 py-2 transition-all duration-200 hover:scale-105"
                   >
                     {locale === "sq" ? "Kërko" : "Search"}
                   </Button>
@@ -208,7 +208,7 @@ export default function HomePage() {
                         </p>
                         <p className="text-sm text-muted-foreground">{product.brand}</p>
                       </div>
-                      <span className="text-violet-500 font-bold">
+                      <span className="text-red-500 font-bold">
                         {formatPrice(product.price_all, product.price_eur)}
                       </span>
                     </button>
@@ -216,7 +216,7 @@ export default function HomePage() {
                   <Link
                     href={`/products?search=${encodeURIComponent(searchQuery)}`}
                     onClick={() => setShowSearchResults(false)}
-                    className="flex items-center justify-center gap-2 p-4 text-violet-500 font-medium hover:bg-secondary transition-colors"
+                    className="flex items-center justify-center gap-2 p-4 text-red-500 font-medium hover:bg-secondary transition-colors"
                   >
                     {locale === 'sq' ? 'Shiko të gjitha rezultatet' : 'View all results'}
                     <ArrowRight className="w-4 h-4" />
@@ -261,7 +261,7 @@ export default function HomePage() {
             <h2 className="text-lg font-semibold text-foreground">
               {locale === "sq" ? "Markat Kryesore" : "Top Brands"}
             </h2>
-            <Link href="/products" className="text-violet-500 text-sm font-medium hover:text-violet-600 transition-colors">
+            <Link href="/products" className="text-red-500 text-sm font-medium hover:text-violet-600 transition-colors">
               {locale === "sq" ? "Shiko të gjitha" : "View all"} →
             </Link>
           </div>
@@ -372,7 +372,7 @@ export default function HomePage() {
           {/* Section Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
             <div className="flex items-center gap-3 mb-4 md:mb-0">
-              <div className="w-10 h-10 rounded-full bg-violet-500 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-full bg-red-500 flex items-center justify-center">
                 <Zap className="w-5 h-5 text-white" />
               </div>
               <h2 className="text-2xl md:text-3xl font-bold text-foreground">
@@ -389,7 +389,7 @@ export default function HomePage() {
                   className={cn(
                     "flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all duration-300",
                     activeTab === tab.id
-                      ? "bg-violet-500 text-white shadow-lg"
+                      ? "bg-red-500 text-white shadow-lg"
                       : "text-muted-foreground hover:text-foreground"
                   )}
                 >
@@ -404,7 +404,7 @@ export default function HomePage() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {currentProducts.slice(0, 10).map((product) => (
               <Link key={product.id} href={`/products/${product.slug}`}>
-                <Card className="bg-card border-border hover:shadow-xl transition-all duration-300 group h-full overflow-hidden hover:border-violet-500/50">
+                <Card className="bg-card border-border hover:shadow-xl transition-all duration-300 group h-full overflow-hidden hover:border-red-500/50">
                   <div className="relative aspect-square bg-secondary p-4">
                     <Image
                       src={product.product_images[0]?.image_url || '/placeholder.png'}
@@ -423,7 +423,7 @@ export default function HomePage() {
                       }}
                       className={cn(
                         "absolute top-2 right-2 w-9 h-9 rounded-full bg-white dark:bg-card shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110",
-                        isInWishlist(product.id) ? "text-violet-500" : "text-gray-400 hover:text-violet-500"
+                        isInWishlist(product.id) ? "text-red-500" : "text-gray-400 hover:text-red-500"
                       )}
                     >
                       <Heart className={cn("w-5 h-5", isInWishlist(product.id) && "fill-current")} />
@@ -431,11 +431,11 @@ export default function HomePage() {
                   </div>
                   <div className="p-4">
                     <p className="text-xs text-muted-foreground mb-1">{product.brand}</p>
-                    <h3 className="text-sm font-medium text-foreground mb-2 line-clamp-2 min-h-[40px] group-hover:text-violet-500 transition-colors">
+                    <h3 className="text-sm font-medium text-foreground mb-2 line-clamp-2 min-h-[40px] group-hover:text-red-500 transition-colors">
                       {locale === "sq" ? product.name_sq : product.name_en}
                     </h3>
                     <div className="flex items-center gap-2">
-                      <span className="text-lg font-bold text-violet-500">
+                      <span className="text-lg font-bold text-red-500">
                         {formatPrice(product.price_all, product.price_eur)}
                       </span>
                       {product.original_price_all && (
@@ -453,7 +453,7 @@ export default function HomePage() {
           {/* View All Button */}
           <div className="text-center mt-8">
             <Link href={activeTab === "deals" ? "/deals" : "/products"}>
-              <Button size="lg" className="bg-violet-500 hover:bg-violet-600 text-white px-8 transition-all duration-300 hover:scale-105">
+              <Button size="lg" className="bg-red-500 hover:bg-violet-600 text-white px-8 transition-all duration-300 hover:scale-105">
                 {locale === "sq" ? "Shiko të gjitha produktet" : "View All Products"}
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
@@ -463,7 +463,7 @@ export default function HomePage() {
       </section>
 
       {/* Newsletter Section */}
-      <section className="py-16 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+      <section className="py-16 bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600">
         <div className="container mx-auto px-4">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-3xl font-bold text-white mb-4">

@@ -66,7 +66,7 @@ export default function ContactPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute inset-0" style={{
             backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
@@ -118,13 +118,13 @@ export default function ContactPage() {
                 href={method.link}
                 className="group"
               >
-                <Card className="p-6 bg-card border-border hover:shadow-xl transition-all duration-300 hover:border-violet-500/50 h-full">
+                <Card className="p-6 bg-card border-border hover:shadow-xl transition-all duration-300 hover:border-red-500/50 h-full">
                   <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${method.color} flex items-center justify-center text-white mb-4 transition-transform duration-300 group-hover:scale-110`}>
                     {method.icon}
                   </div>
                   <h3 className="text-xl font-semibold text-foreground mb-2">{method.title}</h3>
                   <p className="text-muted-foreground text-sm mb-4">{method.description}</p>
-                  <span className="text-violet-500 font-medium group-hover:text-violet-600 transition-colors">
+                  <span className="text-red-500 font-medium group-hover:text-violet-600 transition-colors">
                     {method.action}
                   </span>
                 </Card>
@@ -156,7 +156,7 @@ export default function ContactPage() {
                   <Button
                     onClick={() => setIsSubmitted(false)}
                     variant="outline"
-                    className="border-violet-500 text-violet-500 hover:bg-violet-500 hover:text-white"
+                    className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white"
                   >
                     {locale === "sq" ? "Dërgo një mesazh tjetër" : "Send another message"}
                   </Button>
@@ -216,14 +216,14 @@ export default function ContactPage() {
                         value={formData.message}
                         onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                         rows={5}
-                        className="w-full px-4 py-3 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-violet-500 resize-none"
+                        className="w-full px-4 py-3 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-red-500 resize-none"
                         placeholder={locale === "sq" ? "Shkruani mesazhin tuaj këtu..." : "Type your message here..."}
                         required
                       />
                     </div>
                     <Button
                       type="submit"
-                      className="w-full bg-violet-500 hover:bg-violet-600 text-white py-6 transition-all duration-300 hover:scale-[1.02]"
+                      className="w-full bg-red-500 hover:bg-violet-600 text-white py-6 transition-all duration-300 hover:scale-[1.02]"
                     >
                       <Send className="w-5 h-5 mr-2" />
                       {locale === "sq" ? "Dërgo Mesazhin" : "Send Message"}
@@ -237,7 +237,7 @@ export default function ContactPage() {
             <div className="space-y-6">
               <Card className="p-6 bg-card border-border">
                 <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-violet-500" />
+                  <Clock className="w-5 h-5 text-red-500" />
                   {locale === "sq" ? "Oraret e Punës" : "Business Hours"}
                 </h3>
                 <div className="space-y-3">
@@ -264,20 +264,20 @@ export default function ContactPage() {
 
               <Card className="p-6 bg-card border-border">
                 <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-                  <MapPin className="w-5 h-5 text-violet-500" />
+                  <MapPin className="w-5 h-5 text-red-500" />
                   {locale === "sq" ? "Adresa" : "Address"}
                 </h3>
                 <p className="text-muted-foreground mb-4">
                   Rruga Myslym Shyri, Nr. 42<br />
                   Tiranë, Shqipëri 1001
                 </p>
-                <Button variant="outline" className="border-violet-500 text-violet-500 hover:bg-violet-500 hover:text-white w-full">
+                <Button variant="outline" className="border-red-500 text-red-500 hover:bg-red-500 hover:text-white w-full">
                   <MapPin className="w-4 h-4 mr-2" />
                   {locale === "sq" ? "Shiko në Hartë" : "View on Map"}
                 </Button>
               </Card>
 
-              <Card className="p-6 bg-gradient-to-br from-indigo-500 to-purple-500 border-0">
+              <Card className="p-6 bg-gradient-to-br from-blue-600 to-purple-600 border-0">
                 <h3 className="text-lg font-semibold text-white mb-2">
                   {locale === "sq" ? "Keni nevojë për ndihmë të shpejtë?" : "Need quick help?"}
                 </h3>
@@ -287,7 +287,7 @@ export default function ContactPage() {
                     : "Check our FAQ for quick answers"}
                 </p>
                 <Link href="/faq">
-                  <Button className="bg-white text-violet-500 hover:bg-gray-100 w-full">
+                  <Button className="bg-white text-red-500 hover:bg-gray-100 w-full">
                     {locale === "sq" ? "Shiko FAQ" : "View FAQ"}
                   </Button>
                 </Link>

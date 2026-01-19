@@ -48,7 +48,7 @@ export default function DealsPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-600 via-blue-500 to-purple-600">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute inset-0" style={{
@@ -130,7 +130,7 @@ export default function DealsPage() {
                 {locale === "sq" ? "Çmime speciale çdo ditë" : "Special prices every day"}
               </p>
             </div>
-            <div className="bg-gradient-to-r from-violet-500 to-pink-500 rounded-2xl p-6 text-white">
+            <div className="bg-gradient-to-r from-red-500 to-pink-500 rounded-2xl p-6 text-white">
               <Percent className="w-8 h-8 mb-3" />
               <h3 className="text-xl font-bold mb-1">
                 {locale === "sq" ? "Oferta Ekskluzive" : "Exclusive Offers"}
@@ -163,7 +163,7 @@ export default function DealsPage() {
 
               return (
                 <Link key={product.id} href={`/products/${product.slug}`}>
-                  <Card className="bg-card border-border hover:shadow-xl transition-all duration-300 group h-full overflow-hidden hover:border-violet-500/50">
+                  <Card className="bg-card border-border hover:shadow-xl transition-all duration-300 group h-full overflow-hidden hover:border-red-500/50">
                     <div className="relative aspect-square bg-secondary p-4">
                       <Image
                         src={product.product_images[0]?.image_url || '/placeholder.png'}
@@ -173,7 +173,7 @@ export default function DealsPage() {
                       />
 
                       {/* Discount Badge */}
-                      <Badge className="absolute top-2 left-2 bg-violet-500 text-white text-sm font-bold">
+                      <Badge className="absolute top-2 left-2 bg-red-500 text-white text-sm font-bold">
                         -{discount}%
                       </Badge>
 
@@ -186,7 +186,7 @@ export default function DealsPage() {
                         }}
                         className={cn(
                           "absolute top-2 right-2 w-10 h-10 rounded-full bg-white dark:bg-card shadow-lg flex items-center justify-center transition-all duration-300 hover:scale-110",
-                          isInWishlist(product.id) ? "text-violet-500" : "text-gray-400 hover:text-violet-500"
+                          isInWishlist(product.id) ? "text-red-500" : "text-gray-400 hover:text-red-500"
                         )}
                       >
                         <Heart className={cn("w-5 h-5", isInWishlist(product.id) && "fill-current")} />
@@ -195,7 +195,7 @@ export default function DealsPage() {
                       {/* Add to Cart Button (appears on hover) */}
                       <Button
                         onClick={(e) => handleAddToCart(e, product)}
-                        className="absolute bottom-2 left-2 right-2 bg-violet-500 hover:bg-violet-600 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0"
+                        className="absolute bottom-2 left-2 right-2 bg-red-500 hover:bg-violet-600 text-white opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0"
                       >
                         <ShoppingCart className="w-4 h-4 mr-2" />
                         {locale === "sq" ? "Shto në Shportë" : "Add to Cart"}
@@ -204,13 +204,13 @@ export default function DealsPage() {
 
                     <div className="p-4">
                       <p className="text-xs text-muted-foreground mb-1">{product.brand}</p>
-                      <h3 className="text-sm font-medium text-foreground mb-3 line-clamp-2 min-h-[40px] group-hover:text-violet-500 transition-colors">
+                      <h3 className="text-sm font-medium text-foreground mb-3 line-clamp-2 min-h-[40px] group-hover:text-red-500 transition-colors">
                         {locale === "sq" ? product.name_sq : product.name_en}
                       </h3>
 
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-xl font-bold text-violet-500">
+                          <span className="text-xl font-bold text-red-500">
                             {formatPrice(product.price_all, product.price_eur)}
                           </span>
                         </div>
@@ -242,7 +242,7 @@ export default function DealsPage() {
                 {locale === "sq" ? "Kthehuni më vonë për oferta të reja" : "Check back later for new deals"}
               </p>
               <Link href="/products">
-                <Button className="bg-violet-500 hover:bg-violet-600 text-white">
+                <Button className="bg-red-500 hover:bg-violet-600 text-white">
                   {locale === "sq" ? "Shiko të gjitha produktet" : "Browse All Products"}
                   <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
@@ -268,9 +268,9 @@ export default function DealsPage() {
               <input
                 type="email"
                 placeholder={locale === "sq" ? "Email-i juaj" : "Your email"}
-                className="flex-1 px-4 py-3 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-violet-500"
+                className="flex-1 px-4 py-3 bg-background border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-red-500"
               />
-              <Button className="bg-violet-500 hover:bg-violet-600 text-white px-6">
+              <Button className="bg-red-500 hover:bg-violet-600 text-white px-6">
                 {locale === "sq" ? "Njoftomë" : "Notify Me"}
               </Button>
             </div>

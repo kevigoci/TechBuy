@@ -243,7 +243,7 @@ export function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
-            <Store className="h-8 w-8 text-violet-500" />
+            <Store className="h-8 w-8 text-red-500" />
             <span className="font-bold text-xl text-foreground hidden sm:block">TechBuy</span>
           </Link>
 
@@ -258,7 +258,7 @@ export function Header() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => searchQuery.length >= 2 && setShowSearchResults(true)}
-                  className="pl-10 pr-4 py-2 w-full bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-violet-500 focus:ring-violet-500"
+                  className="pl-10 pr-4 py-2 w-full bg-secondary border-border text-foreground placeholder:text-muted-foreground focus:border-red-500 focus:ring-red-500"
                 />
               </div>
             </form>
@@ -285,7 +285,7 @@ export function Header() {
                       <p className="font-medium text-foreground text-sm truncate">
                         {locale === 'sq' ? product.name_sq : product.name_en}
                       </p>
-                      <p className="text-violet-500 text-sm font-semibold">
+                      <p className="text-red-500 text-sm font-semibold">
                         {formatPrice(product.price_all, product.price_eur)}
                       </p>
                     </div>
@@ -294,7 +294,7 @@ export function Header() {
                 <Link
                   href={`/products?search=${encodeURIComponent(searchQuery)}`}
                   onClick={() => setShowSearchResults(false)}
-                  className="block p-3 text-center text-violet-500 font-medium hover:bg-secondary border-t border-border"
+                  className="block p-3 text-center text-red-500 font-medium hover:bg-secondary border-t border-border"
                 >
                   {locale === 'sq' ? 'Shiko të gjitha rezultatet' : 'View all results'}
                 </Link>
@@ -309,7 +309,7 @@ export function Header() {
               <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground">
                 <Heart className="w-5 h-5" />
                 {wishlistItems.length > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-violet-500 text-white text-xs">
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
                     {wishlistItems.length}
                   </Badge>
                 )}
@@ -325,7 +325,7 @@ export function Header() {
             >
               <ShoppingCart className="w-5 h-5" />
               {itemCount > 0 && (
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-violet-500 text-white text-xs">
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 p-0 flex items-center justify-center bg-red-500 text-white text-xs">
                   {itemCount}
                 </Badge>
               )}
@@ -367,7 +367,7 @@ export function Header() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignOut} className="text-violet-500">
+                  <DropdownMenuItem onClick={handleSignOut} className="text-red-500">
                     <LogOut className="w-4 h-4 mr-2" />
                     {t("auth.signOut")}
                   </DropdownMenuItem>
@@ -381,7 +381,7 @@ export function Header() {
                   </Button>
                 </Link>
                 <Link href="/register">
-                  <Button size="sm" className="bg-violet-500 hover:bg-violet-600 text-white">
+                  <Button size="sm" className="bg-red-500 hover:bg-violet-600 text-white">
                     {t("auth.signUp")}
                   </Button>
                 </Link>
@@ -428,7 +428,7 @@ export function Header() {
                   size="sm"
                   className={`text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200 ${hoveredCategory === category.id ? 'bg-secondary text-foreground' : ''}`}
                 >
-                  <category.icon className={`w-4 h-4 mr-2 transition-all duration-200 ${hoveredCategory === category.id ? 'text-violet-500 scale-110' : ''}`} />
+                  <category.icon className={`w-4 h-4 mr-2 transition-all duration-200 ${hoveredCategory === category.id ? 'text-red-500 scale-110' : ''}`} />
                   {t(`nav.${category.name}`)}
                   <ChevronDown className={`w-3 h-3 ml-1 transition-transform duration-200 ${hoveredCategory === category.id ? 'rotate-180' : ''}`} />
                 </Button>
@@ -440,7 +440,7 @@ export function Header() {
             onMouseLeave={() => handleDealsHover(false)}
           >
             <Link href="/deals">
-              <Button variant="ghost" size="sm" className={`text-violet-500 hover:text-violet-600 hover:bg-violet-500/10 transition-all duration-200 ${showDeals ? 'bg-violet-500/10' : ''}`}>
+              <Button variant="ghost" size="sm" className={`text-red-500 hover:text-violet-600 hover:bg-red-500/10 transition-all duration-200 ${showDeals ? 'bg-red-500/10' : ''}`}>
                 {t("common.deals")}
                 <ChevronDown className={`w-3 h-3 ml-1 transition-transform duration-200 ${showDeals ? 'rotate-180' : ''}`} />
               </Button>
@@ -476,10 +476,10 @@ export function Header() {
                       />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium text-foreground text-sm line-clamp-2 group-hover:text-violet-500 transition-colors">
+                      <p className="font-medium text-foreground text-sm line-clamp-2 group-hover:text-red-500 transition-colors">
                         {locale === 'sq' ? product.name_sq : product.name_en}
                       </p>
-                      <p className="text-violet-500 text-sm font-semibold mt-1">
+                      <p className="text-red-500 text-sm font-semibold mt-1">
                         {formatPrice(product.price_all, product.price_eur)}
                       </p>
                     </div>
@@ -489,7 +489,7 @@ export function Header() {
               <div className="mt-4 pt-4 border-t border-border text-center">
                 <Link
                   href={navCategories.find(c => c.id === hoveredCategory)?.href || '/categories'}
-                  className="text-violet-500 font-medium hover:text-violet-600"
+                  className="text-red-500 font-medium hover:text-violet-600"
                 >
                   {locale === 'sq' ? 'Shiko të gjitha' : 'View all'} {t(`nav.${hoveredCategory}`)} →
                 </Link>
@@ -516,7 +516,7 @@ export function Header() {
                     <div key={category.id} className="space-y-3">
                       <Link
                         href={`/categories/${category.id}`}
-                        className="flex items-center gap-2 font-semibold text-foreground hover:text-violet-500 transition-colors"
+                        className="flex items-center gap-2 font-semibold text-foreground hover:text-red-500 transition-colors"
                       >
                         <IconComponent className="w-5 h-5" />
                         {locale === 'sq' ? category.name_sq : category.name_en}
@@ -526,14 +526,14 @@ export function Header() {
                           <Link
                             key={product.id}
                             href={`/products/${product.slug}`}
-                            className="block text-sm text-muted-foreground hover:text-violet-500 transition-colors truncate"
+                            className="block text-sm text-muted-foreground hover:text-red-500 transition-colors truncate"
                           >
                             {locale === 'sq' ? product.name_sq : product.name_en}
                           </Link>
                         ))}
                         <Link
                           href={`/categories/${category.id}`}
-                          className="block text-sm text-violet-500 font-medium hover:text-violet-600"
+                          className="block text-sm text-red-500 font-medium hover:text-violet-600"
                         >
                           {locale === 'sq' ? 'Më shumë' : 'More'} →
                         </Link>
@@ -560,7 +560,7 @@ export function Header() {
                 <h3 className="text-lg font-bold text-foreground">
                   {locale === 'sq' ? 'Ofertat e Ditës' : 'Today\'s Deals'}
                 </h3>
-                <Link href="/deals" className="text-violet-500 font-medium hover:text-violet-600 transition-colors duration-200">
+                <Link href="/deals" className="text-red-500 font-medium hover:text-violet-600 transition-colors duration-200">
                   {locale === 'sq' ? 'Shiko të gjitha ofertat' : 'View all deals'} →
                 </Link>
               </div>
@@ -584,16 +584,16 @@ export function Header() {
                           sizes="150px"
                         />
                         {discount > 0 && (
-                          <span className="absolute top-2 left-2 bg-violet-500 text-white text-xs font-bold px-2 py-1 rounded">
+                          <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
                             -{discount}%
                           </span>
                         )}
                       </div>
-                      <p className="font-medium text-foreground text-sm line-clamp-2 group-hover:text-violet-500 transition-colors">
+                      <p className="font-medium text-foreground text-sm line-clamp-2 group-hover:text-red-500 transition-colors">
                         {locale === 'sq' ? product.name_sq : product.name_en}
                       </p>
                       <div className="mt-1">
-                        <span className="text-violet-500 font-bold">
+                        <span className="text-red-500 font-bold">
                           {formatPrice(product.price_all, product.price_eur)}
                         </span>
                         {product.original_price_all && (
@@ -644,7 +644,7 @@ export function Header() {
               <Link
                 href="/deals"
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center gap-2 p-3 bg-violet-500/10 rounded-lg text-violet-500 hover:bg-violet-500/20 col-span-2 transition-all duration-200"
+                className="flex items-center gap-2 p-3 bg-red-500/10 rounded-lg text-red-500 hover:bg-red-500/20 col-span-2 transition-all duration-200"
               >
                 <span className="font-medium">{t("common.deals")}</span>
               </Link>
@@ -663,7 +663,7 @@ export function Header() {
                 </Link>
                 <Button
                   variant="ghost"
-                  className="w-full justify-start text-violet-500"
+                  className="w-full justify-start text-red-500"
                   onClick={() => {
                     handleSignOut()
                     setIsMenuOpen(false)
@@ -681,7 +681,7 @@ export function Header() {
                   </Button>
                 </Link>
                 <Link href="/register" className="flex-1" onClick={() => setIsMenuOpen(false)}>
-                  <Button className="w-full bg-violet-500 hover:bg-violet-600 text-white">
+                  <Button className="w-full bg-red-500 hover:bg-violet-600 text-white">
                     {t("auth.signUp")}
                   </Button>
                 </Link>

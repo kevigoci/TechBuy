@@ -8,6 +8,10 @@ import { Card, CardContent } from "@/components/ui/card"
 import { useLanguage } from "@/contexts/language-context"
 import { CheckCircle, Package, ArrowRight, Home, Loader2 } from "lucide-react"
 
+// Force dynamic rendering to prevent static generation during build
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams()
   const orderNumber = searchParams.get("order") || "UNKNOWN"
