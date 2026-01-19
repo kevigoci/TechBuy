@@ -65,8 +65,12 @@ export function Header() {
   const [showSearchResults, setShowSearchResults] = useState(false)
   const [hoveredCategory, setHoveredCategory] = useState<string | null>(null)
   const [showCategoryDropdown, setShowCategoryDropdown] = useState(false)
+  const [showAllCategories, setShowAllCategories] = useState(false)
+  const [showDeals, setShowDeals] = useState(false)
   const searchRef = useRef<HTMLDivElement>(null)
   const categoryTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const allCategoriesTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const dealsTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const router = useRouter()
   const { user, profile, signOut } = useAuth()
@@ -131,6 +135,8 @@ export function Header() {
     if (categoryId) {
       setHoveredCategory(categoryId)
       setShowCategoryDropdown(true)
+      setShowAllCategories(false)
+      setShowDeals(false)
     } else {
       categoryTimeoutRef.current = setTimeout(() => {
         setShowCategoryDropdown(false)
@@ -139,7 +145,40 @@ export function Header() {
     }
   }
 
+  const handleAllCategoriesHover = (show: boolean) => {
+    if (allCategoriesTimeoutRef.current) {
+      clearTimeout(allCategoriesTimeoutRef.current)
+    }
+    if (show) {
+      setShowAllCategories(true)
+      setShowCategoryDropdown(false)
+      setShowDeals(false)
+      setHoveredCategory(null)
+    } else {
+      allCategoriesTimeoutRef.current = setTimeout(() => {
+        setShowAllCategories(false)
+      }, 150)
+    }
+  }
+
+  const handleDealsHover = (show: boolean) => {
+    if (dealsTimeoutRef.current) {
+      clearTimeout(dealsTimeoutRef.current)
+    }
+    if (show) {
+      setShowDeals(true)
+      setShowCategoryDropdown(false)
+      setShowAllCategories(false)
+      setHoveredCategory(null)
+    } else {
+      dealsTimeoutRef.current = setTimeout(() => {
+        setShowDeals(false)
+      }, 150)
+    }
+  }
+
   const categoryProducts = hoveredCategory ? getProductsByCategory(hoveredCategory).slice(0, 4) : []
+  const dealsProducts = getProductsOnSale(6)
 
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm">
@@ -359,14 +398,20 @@ export function Header() {
 
         {/* Category Navigation - Desktop with Hover Dropdown */}
         <nav className="hidden md:flex items-center gap-1 py-2 border-t border-gray-100 overflow-x-auto relative">
-          <Link href="/categories">
-            <Button variant="ghost" size="sm" className="text-gray-700 hover:text-gray-900 hover:bg-gray-100">
-              <Menu className="w-4 h-4 mr-2" />
-              {t("nav.allCategories")}
-            </Button>
-          </Link>
+          <div
+            onMouseEnter={() => handleAllCategoriesHover(true)}
+            onMouseLeave={() => handleAllCategoriesHover(false)}
+          >
+            <Link href="/categories">
+              <Button variant="ghost" size="sm" className={`text-gray-700 hover:text-gray-900 hover:bg-gray-100 ${showAllCategories ? 'bg-gray-100' : ''}`}>
+                <Menu className="w-4 h-4 mr-2" />
+                {t("nav.allCategories")}
+                <ChevronDown className="w-3 h-3 ml-1" />
+              </Button>
+            </Link>
+          </div>
           <div className="h-4 w-px bg-gray-200 mx-2" />
-          {categories.map((category) => (
+          {navCategories.map((category) => (
             <div
               key={category.name}
               className="relative"
@@ -386,11 +431,17 @@ export function Header() {
               </Link>
             </div>
           ))}
-          <Link href="/products?sale=true">
-            <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600 hover:bg-red-50">
-              {t("common.deals")}
-            </Button>
-          </Link>
+          <div
+            onMouseEnter={() => handleDealsHover(true)}
+            onMouseLeave={() => handleDealsHover(false)}
+          >
+            <Link href="/products?sale=true">
+              <Button variant="ghost" size="sm" className={`text-red-500 hover:text-red-600 hover:bg-red-50 ${showDeals ? 'bg-red-50' : ''}`}>
+                {t("common.deals")}
+                <ChevronDown className="w-3 h-3 ml-1" />
+              </Button>
+            </Link>
+          </div>
         </nav>
 
         {/* Category Dropdown Preview */}
@@ -430,11 +481,119 @@ export function Header() {
               </div>
               <div className="mt-4 pt-4 border-t border-gray-100 text-center">
                 <Link
-                  href={categories.find(c => c.id === hoveredCategory)?.href || '/categories'}
+                  href={navCategories.find(c => c.id === hoveredCategory)?.href || '/categories'}
                   className="text-red-500 font-medium hover:text-red-600"
                 >
                   {locale === 'sq' ? 'Shiko të gjitha' : 'View all'} {t(`nav.${hoveredCategory}`)} →
                 </Link>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* All Categories Dropdown */}
+        {showAllCategories && (
+          <div
+            className="absolute left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40 hidden md:block"
+            onMouseEnter={() => handleAllCategoriesHover(true)}
+            onMouseLeave={() => handleAllCategoriesHover(false)}
+          >
+            <div className="container mx-auto px-4 py-6">
+              <div className="grid grid-cols-5 gap-4">
+                {productCategories.map((category) => {
+                  const IconComponent = categoryIcons[category.id] || Laptop
+                  const categoryProductsList = getProductsByCategory(category.id).slice(0, 2)
+                  return (
+                    <div key={category.id} className="space-y-3">
+                      <Link
+                        href={`/categories/${category.id}`}
+                        className="flex items-center gap-2 font-semibold text-gray-900 hover:text-red-500 transition-colors"
+                      >
+                        <IconComponent className="w-5 h-5" />
+                        {locale === 'sq' ? category.name_sq : category.name_en}
+                      </Link>
+                      <div className="space-y-2">
+                        {categoryProductsList.map((product) => (
+                          <Link
+                            key={product.id}
+                            href={`/products/${product.slug}`}
+                            className="block text-sm text-gray-600 hover:text-red-500 transition-colors truncate"
+                          >
+                            {locale === 'sq' ? product.name_sq : product.name_en}
+                          </Link>
+                        ))}
+                        <Link
+                          href={`/categories/${category.id}`}
+                          className="block text-sm text-red-500 font-medium hover:text-red-600"
+                        >
+                          {locale === 'sq' ? 'Më shumë' : 'More'} →
+                        </Link>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Deals Dropdown */}
+        {showDeals && (
+          <div
+            className="absolute left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-40 hidden md:block"
+            onMouseEnter={() => handleDealsHover(true)}
+            onMouseLeave={() => handleDealsHover(false)}
+          >
+            <div className="container mx-auto px-4 py-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-gray-900">
+                  {locale === 'sq' ? 'Ofertat e Ditës' : 'Today\'s Deals'}
+                </h3>
+                <Link href="/products?sale=true" className="text-red-500 font-medium hover:text-red-600">
+                  {locale === 'sq' ? 'Shiko të gjitha ofertat' : 'View all deals'} →
+                </Link>
+              </div>
+              <div className="grid grid-cols-6 gap-4">
+                {dealsProducts.map((product) => {
+                  const discount = product.original_price_all
+                    ? Math.round(((product.original_price_all - product.price_all) / product.original_price_all) * 100)
+                    : 0
+                  return (
+                    <Link
+                      key={product.id}
+                      href={`/products/${product.slug}`}
+                      className="group text-center"
+                    >
+                      <div className="relative w-full aspect-square bg-gray-100 rounded-lg overflow-hidden mb-2">
+                        <Image
+                          src={product.product_images[0]?.image_url || '/placeholder.png'}
+                          alt={product.name_en}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform"
+                          sizes="150px"
+                        />
+                        {discount > 0 && (
+                          <span className="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                            -{discount}%
+                          </span>
+                        )}
+                      </div>
+                      <p className="font-medium text-gray-900 text-sm line-clamp-2 group-hover:text-red-500 transition-colors">
+                        {locale === 'sq' ? product.name_sq : product.name_en}
+                      </p>
+                      <div className="mt-1">
+                        <span className="text-red-500 font-bold">
+                          {formatPrice(product.price_all, product.price_eur)}
+                        </span>
+                        {product.original_price_all && (
+                          <span className="text-gray-400 text-sm line-through ml-2">
+                            {formatPrice(product.original_price_all, product.original_price_eur || 0)}
+                          </span>
+                        )}
+                      </div>
+                    </Link>
+                  )
+                })}
               </div>
             </div>
           </div>
@@ -461,7 +620,7 @@ export function Header() {
 
             {/* Mobile Categories */}
             <nav className="grid grid-cols-2 gap-2">
-              {categories.map((category) => (
+              {navCategories.map((category) => (
                 <Link
                   key={category.name}
                   href={category.href}
@@ -472,6 +631,13 @@ export function Header() {
                   <span>{t(`nav.${category.name}`)}</span>
                 </Link>
               ))}
+              <Link
+                href="/products?sale=true"
+                onClick={() => setIsMenuOpen(false)}
+                className="flex items-center gap-2 p-3 bg-red-50 rounded-lg text-red-500 hover:bg-red-100 col-span-2"
+              >
+                <span className="font-medium">{t("common.deals")}</span>
+              </Link>
             </nav>
 
             {/* Mobile Auth */}
