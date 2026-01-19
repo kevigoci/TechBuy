@@ -1,205 +1,301 @@
 "use client"
 
 import type React from "react"
-
-import { ArrowRight, Mail, MessageCircle, Clock } from "lucide-react"
-import Link from "next/link"
 import { useState } from "react"
+import Link from "next/link"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Card } from "@/components/ui/card"
+import { useLanguage } from "@/contexts/language-context"
+import {
+  ArrowLeft,
+  Mail,
+  MessageCircle,
+  Clock,
+  Phone,
+  MapPin,
+  Send,
+  CheckCircle,
+  Headphones,
+} from "lucide-react"
 
 export default function ContactPage() {
+  const { locale } = useLanguage()
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     subject: "",
     message: "",
   })
+  const [isSubmitted, setIsSubmitted] = useState(false)
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    // Redirect to Discord for support
-    window.open("https://discord.gg/j2AaVSpkad", "_blank")
+    // Simulate form submission
+    setIsSubmitted(true)
+    // In a real app, you would send the form data to your backend
   }
 
   const contactMethods = [
     {
-      icon: <MessageCircle className="w-8 h-8" />,
-      title: "Discord Support",
-      description: "Join our Discord server for instant support and community",
-      action: "Join Discord",
-      link: "https://discord.gg/j2AaVSpkad",
+      icon: <Phone className="w-6 h-6" />,
+      title: locale === "sq" ? "Na Telefononi" : "Call Us",
+      description: locale === "sq" ? "Jemi të disponueshëm 24/7" : "We're available 24/7",
+      action: "+355 69 123 4567",
+      link: "tel:+355691234567",
+      color: "from-blue-500 to-cyan-500",
     },
     {
-      icon: <Mail className="w-8 h-8" />,
-      title: "Email Support",
-      description: "Send us an email and we'll respond within 24 hours",
-      action: "Send Email",
+      icon: <Mail className="w-6 h-6" />,
+      title: locale === "sq" ? "Email" : "Email",
+      description: locale === "sq" ? "Përgjigjemi brenda 24 orëve" : "We respond within 24 hours",
+      action: "support@techbuy.al",
       link: "mailto:support@techbuy.al",
+      color: "from-purple-500 to-pink-500",
     },
     {
-      icon: <Clock className="w-8 h-8" />,
-      title: "Live Chat",
-      description: "Chat with our support team in real-time",
-      action: "Start Chat",
+      icon: <MessageCircle className="w-6 h-6" />,
+      title: locale === "sq" ? "Chat Live" : "Live Chat",
+      description: locale === "sq" ? "Bisedoni me ekipin tonë" : "Chat with our team",
+      action: locale === "sq" ? "Fillo Chat" : "Start Chat",
       link: "#",
+      color: "from-green-500 to-emerald-500",
     },
   ]
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#1a1a2e] to-[#16213e]">
-      {/* Header */}
-      <div className="border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <Link href="/" className="inline-flex items-center text-white hover:text-purple-400 transition-colors">
-            <ArrowRight className="w-4 h-4 mr-2 rotate-180" />
-            Back to Marketplace
+    <div className="min-h-screen bg-background">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+          }} />
+        </div>
+
+        <div className="container mx-auto px-4 py-16 md:py-20 relative z-10">
+          <Link
+            href="/"
+            className="inline-flex items-center text-white/80 hover:text-white mb-8 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            {locale === "sq" ? "Kthehu në Kryefaqe" : "Back to Home"}
           </Link>
-        </div>
-      </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        {/* Hero Section */}
-        <div className="text-center mb-16">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-6">
-            Contact Us
-          </h1>
-          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Need help? Have questions? Our support team is here to assist you 24/7.
-          </p>
+          <div className="max-w-3xl">
+            <div className="inline-flex items-center gap-2 bg-white/20 rounded-full px-4 py-2 mb-6">
+              <Headphones className="w-5 h-5 text-white" />
+              <span className="text-white font-medium">
+                {locale === "sq" ? "Mbështetje 24/7" : "24/7 Support"}
+              </span>
+            </div>
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4">
+              {locale === "sq" ? "Na Kontaktoni" : "Contact Us"}
+            </h1>
+            <p className="text-xl text-white/90">
+              {locale === "sq"
+                ? "Keni pyetje? Ekipi ynë është këtu për t'ju ndihmuar."
+                : "Have questions? Our team is here to help you."}
+            </p>
+          </div>
         </div>
 
-        {/* Contact Methods */}
-        <div className="grid md:grid-cols-3 gap-8 mb-16">
-          {contactMethods.map((method, index) => (
-            <div key={index} className="glass-card p-6 text-center group hover:scale-105 transition-all duration-300">
-              <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center mx-auto mb-4 text-white group-hover:shadow-lg group-hover:shadow-purple-500/25">
-                {method.icon}
-              </div>
-              <h3 className="text-xl font-semibold text-purple-400 mb-3">{method.title}</h3>
-              <p className="text-gray-300 mb-4">{method.description}</p>
+        {/* Wave */}
+        <div className="absolute bottom-0 left-0 right-0">
+          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full">
+            <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" className="fill-background"/>
+          </svg>
+        </div>
+      </section>
+
+      {/* Contact Methods */}
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-3 gap-6">
+            {contactMethods.map((method, index) => (
               <a
+                key={index}
                 href={method.link}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-medium rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300"
+                className="group"
               >
-                {method.action}
-                <ArrowRight className="w-4 h-4 ml-2" />
+                <Card className="p-6 bg-card border-border hover:shadow-xl transition-all duration-300 hover:border-violet-500/50 h-full">
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${method.color} flex items-center justify-center text-white mb-4 transition-transform duration-300 group-hover:scale-110`}>
+                    {method.icon}
+                  </div>
+                  <h3 className="text-xl font-semibold text-foreground mb-2">{method.title}</h3>
+                  <p className="text-muted-foreground text-sm mb-4">{method.description}</p>
+                  <span className="text-violet-500 font-medium group-hover:text-violet-600 transition-colors">
+                    {method.action}
+                  </span>
+                </Card>
               </a>
-            </div>
-          ))}
-        </div>
-
-        {/* Contact Form */}
-        <div className="grid md:grid-cols-2 gap-12">
-          <div className="glass-card p-8">
-            <h2 className="text-3xl font-bold text-white mb-6">Send us a Message</h2>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label className="block text-purple-400 font-medium mb-2">Name</label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none"
-                  placeholder="Your name"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-purple-400 font-medium mb-2">Email</label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none"
-                  placeholder="your@email.com"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-purple-400 font-medium mb-2">Subject</label>
-                <input
-                  type="text"
-                  value={formData.subject}
-                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none"
-                  placeholder="How can we help?"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-purple-400 font-medium mb-2">Message</label>
-                <textarea
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  rows={5}
-                  className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white placeholder-gray-400 focus:border-purple-500 focus:outline-none resize-none"
-                  placeholder="Tell us more about your inquiry..."
-                  required
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 text-white font-semibold rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-300 shadow-lg hover:shadow-purple-500/25"
-              >
-                Send Message
-              </button>
-            </form>
-          </div>
-
-          <div className="space-y-8">
-            <div className="glass-card p-6">
-              <h3 className="text-xl font-semibold text-purple-400 mb-4">Quick Support</h3>
-              <p className="text-gray-300 mb-4">
-                For immediate assistance, join our Discord server where our team is available 24/7 to help with:
-              </p>
-              <ul className="space-y-2 text-gray-300">
-                <li>• Account delivery issues</li>
-                <li>• Payment questions</li>
-                <li>• Technical support</li>
-                <li>• Product inquiries</li>
-                <li>• Warranty claims</li>
-              </ul>
-            </div>
-
-            <div className="glass-card p-6">
-              <h3 className="text-xl font-semibold text-purple-400 mb-4">Response Times</h3>
-              <div className="space-y-3">
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Discord</span>
-                  <span className="text-green-400 font-medium">Instant</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Live Chat</span>
-                  <span className="text-green-400 font-medium">&lt; 5 minutes</span>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-gray-300">Email</span>
-                  <span className="text-yellow-400 font-medium">&lt; 24 hours</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="glass-card p-6">
-              <h3 className="text-xl font-semibold text-purple-400 mb-4">Business Hours</h3>
-              <div className="space-y-2 text-gray-300">
-                <div className="flex justify-between">
-                  <span>Support Team</span>
-                  <span>24/7 Available</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Discord</span>
-                  <span>Always Online</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Live Chat</span>
-                  <span>24/7 Available</span>
-                </div>
-              </div>
-            </div>
+            ))}
           </div>
         </div>
-      </div>
+      </section>
+
+      {/* Contact Form & Info */}
+      <section className="py-12">
+        <div className="container mx-auto px-4">
+          <div className="grid lg:grid-cols-2 gap-12">
+            {/* Contact Form */}
+            <Card className="p-8 bg-card border-border">
+              {isSubmitted ? (
+                <div className="text-center py-12">
+                  <div className="w-20 h-20 rounded-full bg-green-500/10 flex items-center justify-center mx-auto mb-6">
+                    <CheckCircle className="w-10 h-10 text-green-500" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-foreground mb-2">
+                    {locale === "sq" ? "Mesazhi u Dërgua!" : "Message Sent!"}
+                  </h3>
+                  <p className="text-muted-foreground mb-6">
+                    {locale === "sq"
+                      ? "Do t'ju kontaktojmë sa më shpejt të jetë e mundur."
+                      : "We'll get back to you as soon as possible."}
+                  </p>
+                  <Button
+                    onClick={() => setIsSubmitted(false)}
+                    variant="outline"
+                    className="border-violet-500 text-violet-500 hover:bg-violet-500 hover:text-white"
+                  >
+                    {locale === "sq" ? "Dërgo një mesazh tjetër" : "Send another message"}
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <h2 className="text-2xl font-bold text-foreground mb-6">
+                    {locale === "sq" ? "Dërgoni një Mesazh" : "Send us a Message"}
+                  </h2>
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          {locale === "sq" ? "Emri" : "Name"}
+                        </label>
+                        <Input
+                          type="text"
+                          value={formData.name}
+                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                          className="bg-secondary border-border"
+                          placeholder={locale === "sq" ? "Emri juaj" : "Your name"}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">
+                          {locale === "sq" ? "Email" : "Email"}
+                        </label>
+                        <Input
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                          className="bg-secondary border-border"
+                          placeholder={locale === "sq" ? "email@shembull.com" : "email@example.com"}
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        {locale === "sq" ? "Subjekti" : "Subject"}
+                      </label>
+                      <Input
+                        type="text"
+                        value={formData.subject}
+                        onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
+                        className="bg-secondary border-border"
+                        placeholder={locale === "sq" ? "Si mund t'ju ndihmojmë?" : "How can we help?"}
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">
+                        {locale === "sq" ? "Mesazhi" : "Message"}
+                      </label>
+                      <textarea
+                        value={formData.message}
+                        onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                        rows={5}
+                        className="w-full px-4 py-3 bg-secondary border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-violet-500 resize-none"
+                        placeholder={locale === "sq" ? "Shkruani mesazhin tuaj këtu..." : "Type your message here..."}
+                        required
+                      />
+                    </div>
+                    <Button
+                      type="submit"
+                      className="w-full bg-violet-500 hover:bg-violet-600 text-white py-6 transition-all duration-300 hover:scale-[1.02]"
+                    >
+                      <Send className="w-5 h-5 mr-2" />
+                      {locale === "sq" ? "Dërgo Mesazhin" : "Send Message"}
+                    </Button>
+                  </form>
+                </>
+              )}
+            </Card>
+
+            {/* Info Cards */}
+            <div className="space-y-6">
+              <Card className="p-6 bg-card border-border">
+                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-violet-500" />
+                  {locale === "sq" ? "Oraret e Punës" : "Business Hours"}
+                </h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center pb-3 border-b border-border">
+                    <span className="text-muted-foreground">
+                      {locale === "sq" ? "E Hënë - E Premte" : "Monday - Friday"}
+                    </span>
+                    <span className="text-foreground font-medium">08:00 - 20:00</span>
+                  </div>
+                  <div className="flex justify-between items-center pb-3 border-b border-border">
+                    <span className="text-muted-foreground">
+                      {locale === "sq" ? "E Shtunë" : "Saturday"}
+                    </span>
+                    <span className="text-foreground font-medium">09:00 - 18:00</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">
+                      {locale === "sq" ? "E Diel" : "Sunday"}
+                    </span>
+                    <span className="text-foreground font-medium">10:00 - 16:00</span>
+                  </div>
+                </div>
+              </Card>
+
+              <Card className="p-6 bg-card border-border">
+                <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-violet-500" />
+                  {locale === "sq" ? "Adresa" : "Address"}
+                </h3>
+                <p className="text-muted-foreground mb-4">
+                  Rruga Myslym Shyri, Nr. 42<br />
+                  Tiranë, Shqipëri 1001
+                </p>
+                <Button variant="outline" className="border-violet-500 text-violet-500 hover:bg-violet-500 hover:text-white w-full">
+                  <MapPin className="w-4 h-4 mr-2" />
+                  {locale === "sq" ? "Shiko në Hartë" : "View on Map"}
+                </Button>
+              </Card>
+
+              <Card className="p-6 bg-gradient-to-br from-indigo-500 to-purple-500 border-0">
+                <h3 className="text-lg font-semibold text-white mb-2">
+                  {locale === "sq" ? "Keni nevojë për ndihmë të shpejtë?" : "Need quick help?"}
+                </h3>
+                <p className="text-white/90 text-sm mb-4">
+                  {locale === "sq"
+                    ? "Kontrolloni FAQ tonë për përgjigje të shpejta"
+                    : "Check our FAQ for quick answers"}
+                </p>
+                <Link href="/faq">
+                  <Button className="bg-white text-violet-500 hover:bg-gray-100 w-full">
+                    {locale === "sq" ? "Shiko FAQ" : "View FAQ"}
+                  </Button>
+                </Link>
+              </Card>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
