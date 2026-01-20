@@ -10,7 +10,6 @@ import { CheckCircle, Package, ArrowRight, Home, Loader2 } from "lucide-react"
 
 // Force dynamic rendering to prevent static generation during build
 export const dynamic = 'force-dynamic'
-export const revalidate = 0
 
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams()
