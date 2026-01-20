@@ -4,76 +4,76 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Clean white theme like gjirafa50 */
+  /* Clean white theme with purple accent */
   --background: #ffffff;
   --foreground: #1a1a1a;
   --card: #ffffff;
   --card-foreground: #1a1a1a;
   --popover: #ffffff;
   --popover-foreground: #1a1a1a;
-  --primary: #e53935;
+  --primary: #8b5cf6;
   --primary-foreground: #ffffff;
   --secondary: #f5f5f5;
   --secondary-foreground: #1a1a1a;
   --muted: #f5f5f5;
   --muted-foreground: #666666;
-  --accent: #e53935;
+  --accent: #8b5cf6;
   --accent-foreground: #ffffff;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --border: #e5e5e5;
   --input: #ffffff;
-  --ring: rgba(229, 57, 53, 0.3);
-  --chart-1: #e53935;
+  --ring: rgba(139, 92, 246, 0.3);
+  --chart-1: #8b5cf6;
   --chart-2: #22c55e;
   --chart-3: #f59e0b;
-  --chart-4: #8b5cf6;
-  --chart-5: #ef4444;
+  --chart-4: #ec4899;
+  --chart-5: #6366f1;
   --radius: 0.5rem;
   --sidebar: #ffffff;
   --sidebar-foreground: #1a1a1a;
-  --sidebar-primary: #e53935;
+  --sidebar-primary: #8b5cf6;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e53935;
+  --sidebar-accent: #8b5cf6;
   --sidebar-accent-foreground: #ffffff;
   --sidebar-border: #e5e5e5;
-  --sidebar-ring: rgba(229, 57, 53, 0.3);
+  --sidebar-ring: rgba(139, 92, 246, 0.3);
 }
 
 .dark {
-  /* Dark theme option */
+  /* Dark theme with purple accent */
   --background: #121212;
   --foreground: #f5f5f5;
   --card: #1e1e1e;
   --card-foreground: #f5f5f5;
   --popover: #1e1e1e;
   --popover-foreground: #f5f5f5;
-  --primary: #e53935;
-  --primary-foreground: #ffffff;
+  --primary: #a78bfa;
+  --primary-foreground: #1a1a1a;
   --secondary: #2a2a2a;
   --secondary-foreground: #f5f5f5;
   --muted: #2a2a2a;
   --muted-foreground: #a0a0a0;
-  --accent: #e53935;
-  --accent-foreground: #ffffff;
+  --accent: #a78bfa;
+  --accent-foreground: #1a1a1a;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --border: #333333;
   --input: #1e1e1e;
-  --ring: rgba(229, 57, 53, 0.3);
-  --chart-1: #e53935;
+  --ring: rgba(167, 139, 250, 0.3);
+  --chart-1: #a78bfa;
   --chart-2: #22c55e;
   --chart-3: #f59e0b;
-  --chart-4: #8b5cf6;
-  --chart-5: #ef4444;
+  --chart-4: #ec4899;
+  --chart-5: #6366f1;
   --sidebar: #1e1e1e;
   --sidebar-foreground: #f5f5f5;
-  --sidebar-primary: #e53935;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e53935;
-  --sidebar-accent-foreground: #ffffff;
+  --sidebar-primary: #a78bfa;
+  --sidebar-primary-foreground: #1a1a1a;
+  --sidebar-accent: #a78bfa;
+  --sidebar-accent-foreground: #1a1a1a;
   --sidebar-border: #333333;
-  --sidebar-ring: rgba(229, 57, 53, 0.3);
+  --sidebar-ring: rgba(167, 139, 250, 0.3);
 }
 
 @theme inline {
@@ -135,7 +135,7 @@
   }
 
   .gradient-primary {
-    @apply bg-gradient-to-r from-red-500 via-red-600 to-red-500;
+    @apply bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600;
   }
 
   .gradient-secondary {
@@ -143,11 +143,11 @@
   }
 
   .gradient-text {
-    @apply bg-gradient-to-r from-red-500 via-red-600 to-red-500 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600 bg-clip-text text-transparent;
   }
 
   .gradient-banner {
-    @apply bg-gradient-to-r from-red-500 via-red-600 to-orange-500;
+    @apply bg-gradient-to-r from-blue-600 via-blue-500 to-purple-600;
   }
 
   .hover-lift {
@@ -165,7 +165,7 @@
 
   /* Badge styles */
   .badge-sale {
-    @apply bg-red-500 text-white text-xs font-semibold px-2 py-1 rounded;
+    @apply bg-violet-500 text-white text-xs font-semibold px-2 py-1 rounded;
   }
 
   .badge-new {

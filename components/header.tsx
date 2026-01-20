@@ -381,7 +381,7 @@ export function Header() {
                   </Button>
                 </Link>
                 <Link href="/register">
-                  <Button size="sm" className="bg-red-500 hover:bg-red-600 text-white">
+                  <Button size="sm" className="bg-red-500 hover:bg-violet-600 text-white">
                     {t("auth.signUp")}
                   </Button>
                 </Link>
@@ -407,10 +407,10 @@ export function Header() {
             onMouseLeave={() => handleAllCategoriesHover(false)}
           >
             <Link href="/categories">
-              <Button variant="ghost" size="sm" className={`text-foreground hover:text-foreground hover:bg-secondary ${showAllCategories ? 'bg-secondary' : ''}`}>
-                <Menu className="w-4 h-4 mr-2" />
+              <Button variant="ghost" size="sm" className={`text-foreground hover:text-foreground hover:bg-secondary transition-all duration-200 ${showAllCategories ? 'bg-secondary' : ''}`}>
+                <Menu className="w-4 h-4 mr-2 transition-transform duration-200 group-hover:scale-110" />
                 {t("nav.allCategories")}
-                <ChevronDown className="w-3 h-3 ml-1" />
+                <ChevronDown className={`w-3 h-3 ml-1 transition-transform duration-200 ${showAllCategories ? 'rotate-180' : ''}`} />
               </Button>
             </Link>
           </div>
@@ -418,7 +418,7 @@ export function Header() {
           {navCategories.map((category) => (
             <div
               key={category.name}
-              className="relative"
+              className="relative group"
               onMouseEnter={() => handleCategoryHover(category.id)}
               onMouseLeave={() => handleCategoryHover(null)}
             >
@@ -426,11 +426,11 @@ export function Header() {
                 <Button
                   variant="ghost"
                   size="sm"
-                  className={`text-muted-foreground hover:text-foreground hover:bg-secondary ${hoveredCategory === category.id ? 'bg-secondary' : ''}`}
+                  className={`text-muted-foreground hover:text-foreground hover:bg-secondary transition-all duration-200 ${hoveredCategory === category.id ? 'bg-secondary text-foreground' : ''}`}
                 >
-                  <category.icon className="w-4 h-4 mr-2" />
+                  <category.icon className={`w-4 h-4 mr-2 transition-all duration-200 ${hoveredCategory === category.id ? 'text-red-500 scale-110' : ''}`} />
                   {t(`nav.${category.name}`)}
-                  <ChevronDown className="w-3 h-3 ml-1" />
+                  <ChevronDown className={`w-3 h-3 ml-1 transition-transform duration-200 ${hoveredCategory === category.id ? 'rotate-180' : ''}`} />
                 </Button>
               </Link>
             </div>
@@ -439,22 +439,25 @@ export function Header() {
             onMouseEnter={() => handleDealsHover(true)}
             onMouseLeave={() => handleDealsHover(false)}
           >
-            <Link href="/products?sale=true">
-              <Button variant="ghost" size="sm" className={`text-red-500 hover:text-red-600 hover:bg-red-500/10 ${showDeals ? 'bg-red-500/10' : ''}`}>
+            <Link href="/deals">
+              <Button variant="ghost" size="sm" className={`text-red-500 hover:text-violet-600 hover:bg-red-500/10 transition-all duration-200 ${showDeals ? 'bg-red-500/10' : ''}`}>
                 {t("common.deals")}
-                <ChevronDown className="w-3 h-3 ml-1" />
+                <ChevronDown className={`w-3 h-3 ml-1 transition-transform duration-200 ${showDeals ? 'rotate-180' : ''}`} />
               </Button>
             </Link>
           </div>
         </nav>
 
         {/* Category Dropdown Preview */}
-        {showCategoryDropdown && hoveredCategory && (
-          <div
-            className="absolute left-0 right-0 bg-card border-t border-border shadow-lg z-40 hidden md:block"
-            onMouseEnter={() => handleCategoryHover(hoveredCategory)}
-            onMouseLeave={() => handleCategoryHover(null)}
-          >
+        <div
+          className={`absolute left-0 right-0 bg-card border-t border-border shadow-lg z-40 hidden md:block transition-all duration-300 ease-out ${
+            showCategoryDropdown && hoveredCategory
+              ? 'opacity-100 translate-y-0 pointer-events-auto'
+              : 'opacity-0 -translate-y-2 pointer-events-none'
+          }`}
+          onMouseEnter={() => hoveredCategory && handleCategoryHover(hoveredCategory)}
+          onMouseLeave={() => handleCategoryHover(null)}
+        >
             <div className="container mx-auto px-4 py-6">
               <div className="grid grid-cols-4 gap-4">
                 {categoryProducts.map((product) => (
@@ -486,22 +489,24 @@ export function Header() {
               <div className="mt-4 pt-4 border-t border-border text-center">
                 <Link
                   href={navCategories.find(c => c.id === hoveredCategory)?.href || '/categories'}
-                  className="text-red-500 font-medium hover:text-red-600"
+                  className="text-red-500 font-medium hover:text-violet-600"
                 >
                   {locale === 'sq' ? 'Shiko të gjitha' : 'View all'} {t(`nav.${hoveredCategory}`)} →
                 </Link>
               </div>
             </div>
           </div>
-        )}
 
         {/* All Categories Dropdown */}
-        {showAllCategories && (
-          <div
-            className="absolute left-0 right-0 bg-card border-t border-border shadow-lg z-40 hidden md:block"
-            onMouseEnter={() => handleAllCategoriesHover(true)}
-            onMouseLeave={() => handleAllCategoriesHover(false)}
-          >
+        <div
+          className={`absolute left-0 right-0 bg-card border-t border-border shadow-lg z-40 hidden md:block transition-all duration-300 ease-out ${
+            showAllCategories
+              ? 'opacity-100 translate-y-0 pointer-events-auto'
+              : 'opacity-0 -translate-y-2 pointer-events-none'
+          }`}
+          onMouseEnter={() => handleAllCategoriesHover(true)}
+          onMouseLeave={() => handleAllCategoriesHover(false)}
+        >
             <div className="container mx-auto px-4 py-6">
               <div className="grid grid-cols-5 gap-4">
                 {productCategories.map((category) => {
@@ -528,7 +533,7 @@ export function Header() {
                         ))}
                         <Link
                           href={`/categories/${category.id}`}
-                          className="block text-sm text-red-500 font-medium hover:text-red-600"
+                          className="block text-sm text-red-500 font-medium hover:text-violet-600"
                         >
                           {locale === 'sq' ? 'Më shumë' : 'More'} →
                         </Link>
@@ -539,21 +544,23 @@ export function Header() {
               </div>
             </div>
           </div>
-        )}
 
         {/* Deals Dropdown */}
-        {showDeals && (
-          <div
-            className="absolute left-0 right-0 bg-card border-t border-border shadow-lg z-40 hidden md:block"
-            onMouseEnter={() => handleDealsHover(true)}
-            onMouseLeave={() => handleDealsHover(false)}
-          >
+        <div
+          className={`absolute left-0 right-0 bg-card border-t border-border shadow-lg z-40 hidden md:block transition-all duration-300 ease-out ${
+            showDeals
+              ? 'opacity-100 translate-y-0 pointer-events-auto'
+              : 'opacity-0 -translate-y-2 pointer-events-none'
+          }`}
+          onMouseEnter={() => handleDealsHover(true)}
+          onMouseLeave={() => handleDealsHover(false)}
+        >
             <div className="container mx-auto px-4 py-6">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-foreground">
                   {locale === 'sq' ? 'Ofertat e Ditës' : 'Today\'s Deals'}
                 </h3>
-                <Link href="/products?sale=true" className="text-red-500 font-medium hover:text-red-600">
+                <Link href="/deals" className="text-red-500 font-medium hover:text-violet-600 transition-colors duration-200">
                   {locale === 'sq' ? 'Shiko të gjitha ofertat' : 'View all deals'} →
                 </Link>
               </div>
@@ -601,7 +608,6 @@ export function Header() {
               </div>
             </div>
           </div>
-        )}
       </div>
 
       {/* Mobile Menu */}
@@ -636,9 +642,9 @@ export function Header() {
                 </Link>
               ))}
               <Link
-                href="/products?sale=true"
+                href="/deals"
                 onClick={() => setIsMenuOpen(false)}
-                className="flex items-center gap-2 p-3 bg-red-500/10 rounded-lg text-red-500 hover:bg-red-500/20 col-span-2"
+                className="flex items-center gap-2 p-3 bg-red-500/10 rounded-lg text-red-500 hover:bg-red-500/20 col-span-2 transition-all duration-200"
               >
                 <span className="font-medium">{t("common.deals")}</span>
               </Link>
@@ -675,7 +681,7 @@ export function Header() {
                   </Button>
                 </Link>
                 <Link href="/register" className="flex-1" onClick={() => setIsMenuOpen(false)}>
-                  <Button className="w-full bg-red-500 hover:bg-red-600 text-white">
+                  <Button className="w-full bg-red-500 hover:bg-violet-600 text-white">
                     {t("auth.signUp")}
                   </Button>
                 </Link>
