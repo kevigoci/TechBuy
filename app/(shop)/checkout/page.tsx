@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import Image from "next/image"
@@ -14,7 +14,9 @@ import { useCart } from "@/contexts/cart-context"
 import { useCurrency } from "@/contexts/currency-context"
 import { useLanguage } from "@/contexts/language-context"
 import { useAuth } from "@/contexts/auth-context"
-import { ArrowLeft, CreditCard, Truck, Building, Loader2, Lock, ShoppingBag } from "lucide-react"
+import { useStockReservation } from "@/hooks/use-stock-reservation"
+import { ReservationTimer } from "@/components/checkout/reservation-timer"
+import { ArrowLeft, CreditCard, Truck, Building, Loader2, Lock, ShoppingBag, RefreshCw, AlertTriangle as AlertTriangleIcon } from "lucide-react"
 import { toast } from "sonner"
 import { createClient } from "@/lib/supabase/client"
 
@@ -38,6 +40,63 @@ export default function CheckoutPage() {
     expiryDate: "",
     cvv: "",
   })
+
+  // Stock reservation system
+  const {
+    isReserving,
+    isReserved,
+    isExpired,
+    error: reservationError,
+    timeRemaining,
+    secondsRemaining,
+    reserveStock,
+    releaseStock,
+    completeReservation,
+  } = useStockReservation()
+
+  const hasReservedRef = useRef(false)
+
+  // Reserve stock when entering checkout
+  const initiateReservation = useCallback(async () => {
+    if (items.length === 0 || hasReservedRef.current) return
+
+    const reservationItems = items.map((item) => ({
+      product_id: item.product_id,
+      variant_id: item.variant_id || null,
+      quantity: item.quantity,
+    }))
+
+    hasReservedRef.current = true
+    const success = await reserveStock(reservationItems)
+
+    if (!success) {
+      hasReservedRef.current = false
+      toast.error(
+        locale === "sq"
+          ? "Disa produkte nuk janë më të disponueshme"
+          : "Some items are no longer available"
+      )
+    }
+  }, [items, reserveStock, locale])
+
+  useEffect(() => {
+    initiateReservation()
+  }, [initiateReservation])
+
+  // Release stock when navigating away from checkout
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      releaseStock()
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload)
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload)
+      // Release when component unmounts (user navigates away in-app)
+      releaseStock()
+    }
+  }, [releaseStock])
 
   // Fetch user profile and default address to pre-fill form
   useEffect(() => {
@@ -92,6 +151,26 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Block submission if reservation expired
+    if (isExpired) {
+      toast.error(
+        locale === "sq"
+          ? "Rezervimi ka skaduar. Ju lutem rifreskoni dhe provoni përsëri."
+          : "Reservation expired. Please refresh and try again."
+      )
+      return
+    }
+
+    // Block submission if not reserved yet
+    if (!isReserved) {
+      toast.error(
+        locale === "sq"
+          ? "Produktet nuk janë rezervuar ende. Ju lutem prisni."
+          : "Items are not reserved yet. Please wait."
+      )
+      return
+    }
+
     if (!formData.fullName || !formData.email || !formData.phone || !formData.address || !formData.city) {
       toast.error(locale === 'sq' ? "Ju lutem plotësoni të gjitha fushat e kërkuara" : "Please fill in all required fields")
       return
@@ -107,6 +186,20 @@ export default function CheckoutPage() {
     setIsProcessing(true)
 
     try {
+      // Step 1: Complete the stock reservation (decrement real stock)
+      const reservationCompleted = await completeReservation()
+
+      if (!reservationCompleted) {
+        toast.error(
+          locale === "sq"
+            ? "Rezervimi dështoi ose skadoi. Stoku mund të mos jetë më i disponueshëm."
+            : "Reservation failed or expired. Stock may no longer be available."
+        )
+        setIsProcessing(false)
+        return
+      }
+
+      // Step 2: Create the order in database
       const supabase = createClient()
 
       // Generate order number
@@ -210,6 +303,11 @@ export default function CheckoutPage() {
     )
   }
 
+  const handleRetryReservation = () => {
+    hasReservedRef.current = false
+    initiateReservation()
+  }
+
   return (
     <div className="container mx-auto px-4 py-8">
       <Link href="/cart" className="flex items-center gap-2 text-gray-500 hover:text-gray-900 mb-6 transition-colors">
@@ -218,6 +316,30 @@ export default function CheckoutPage() {
       </Link>
 
       <h1 className="text-3xl font-bold text-gray-900 mb-8">{t("checkout.checkout")}</h1>
+
+      {/* Stock Reservation Timer */}
+      <div className="mb-6">
+        <ReservationTimer
+          isReserving={isReserving}
+          isReserved={isReserved}
+          isExpired={isExpired}
+          error={reservationError}
+          timeRemaining={timeRemaining}
+          secondsRemaining={secondsRemaining}
+          locale={locale}
+        />
+        {/* Retry button when expired or error */}
+        {(isExpired || reservationError) && (
+          <Button
+            variant="outline"
+            className="mt-3 w-full border-amber-300 text-amber-700 hover:bg-amber-50"
+            onClick={handleRetryReservation}
+          >
+            <RefreshCw className="w-4 h-4 mr-2" />
+            {locale === "sq" ? "Provo përsëri" : "Try again"}
+          </Button>
+        )}
+      </div>
 
       <form onSubmit={handleSubmit}>
         <div className="grid lg:grid-cols-3 gap-8">
@@ -455,12 +577,22 @@ export default function CheckoutPage() {
                   type="submit"
                   className="w-full bg-red-500 hover:bg-red-600"
                   size="lg"
-                  disabled={isProcessing}
+                  disabled={isProcessing || isExpired || !isReserved || isReserving}
                 >
                   {isProcessing ? (
                     <>
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       {t("checkout.processing")}
+                    </>
+                  ) : isExpired ? (
+                    <>
+                      <AlertTriangleIcon className="w-4 h-4 mr-2" />
+                      {locale === "sq" ? "Rezervimi ka skaduar" : "Reservation expired"}
+                    </>
+                  ) : !isReserved ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      {locale === "sq" ? "Duke rezervuar..." : "Reserving..."}
                     </>
                   ) : (
                     <>

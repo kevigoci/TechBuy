@@ -607,6 +607,44 @@ export interface Database {
           created_at?: string
         }
       }
+      stock_reservations: {
+        Row: {
+          id: string
+          product_id: string
+          variant_id: string | null
+          user_id: string | null
+          session_id: string | null
+          quantity: number
+          status: 'active' | 'completed' | 'expired' | 'released'
+          expires_at: string
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          product_id: string
+          variant_id?: string | null
+          user_id?: string | null
+          session_id?: string | null
+          quantity?: number
+          status?: 'active' | 'completed' | 'expired' | 'released'
+          expires_at: string
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          product_id?: string
+          variant_id?: string | null
+          user_id?: string | null
+          session_id?: string | null
+          quantity?: number
+          status?: 'active' | 'completed' | 'expired' | 'released'
+          expires_at?: string
+          created_at?: string
+          updated_at?: string
+        }
+      }
       promotions: {
         Row: {
           id: string
@@ -668,7 +706,40 @@ export interface Database {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      reserve_stock: {
+        Args: {
+          p_product_id: string
+          p_variant_id?: string | null
+          p_user_id?: string | null
+          p_session_id?: string | null
+          p_quantity?: number
+          p_duration_minutes?: number
+        }
+        Returns: Json
+      }
+      complete_reservation: {
+        Args: {
+          p_reservation_id: string
+        }
+        Returns: Json
+      }
+      release_reservation: {
+        Args: {
+          p_reservation_id: string
+        }
+        Returns: Json
+      }
+      cleanup_expired_reservations: {
+        Args: Record<string, never>
+        Returns: Json
+      }
+      get_available_stock: {
+        Args: {
+          p_product_id: string
+          p_variant_id?: string | null
+        }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
@@ -697,6 +768,7 @@ export type Wishlist = Tables<'wishlists'>
 export type Review = Tables<'reviews'>
 export type Banner = Tables<'banners'>
 export type Promotion = Tables<'promotions'>
+export type StockReservation = Tables<'stock_reservations'>
 
 // Extended types with relations
 export type ProductWithImages = Product & {

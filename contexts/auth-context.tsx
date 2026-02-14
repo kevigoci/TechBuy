@@ -13,6 +13,7 @@ interface AuthContextType {
   isLoading: boolean
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: Error | null }>
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>
+  signInWithGoogle: () => Promise<{ error: Error | null }>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<{ error: Error | null }>
   updatePassword: (password: string) => Promise<{ error: Error | null }>
@@ -112,6 +113,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return { error: error ? new Error(error.message) : null }
   }, [supabase])
 
+  const signInWithGoogle = useCallback(async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/api/auth/callback`,
+      },
+    })
+
+    return { error: error ? new Error(error.message) : null }
+  }, [supabase])
+
   const signOut = useCallback(async () => {
     // Clear state first for immediate UI update
     setUser(null)
@@ -164,11 +176,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     isLoading,
     signUp,
     signIn,
+    signInWithGoogle,
     signOut,
     resetPassword,
     updatePassword,
     updateProfile,
-  }), [user, profile, session, isLoading, signUp, signIn, signOut, resetPassword, updatePassword, updateProfile])
+  }), [user, profile, session, isLoading, signUp, signIn, signInWithGoogle, signOut, resetPassword, updatePassword, updateProfile])
 
   return (
     <AuthContext.Provider value={contextValue}>
