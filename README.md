@@ -1,7 +1,9 @@
 # TechBuy
 
 An online electronics store built for the Albanian market. Supports bilingual content (English / Albanian), dual currency (ALL / EUR), user accounts, wishlists, cart with stock reservations, and a full checkout flow.
-[text](https://www.deluxomarketplace.live/)
+
+https://www.deluxomarketplace.live/
+
 Live product catalog includes laptops, phones, TVs, gaming gear, and accessories from brands like Apple, Samsung, Sony, Dell, ASUS, and others.
 
 ---
