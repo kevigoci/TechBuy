@@ -9,26 +9,26 @@ export default function HowItWorksPage() {
       icon: <Shield className="w-8 h-8" />,
       title: "Browse & Select",
       description:
-        "Choose from our premium GTA V accounts and money boosting services. All accounts are verified and secure.",
-      details: ["Browse verified accounts", "Check account details", "View screenshots & stats"],
+        "The process is simple and easy. You can browse our products and select the one you want to buy. You can also contact our support team if you have any questions.",
+      details: ["Browse our products", "Select the one you want to buy", "Contact our support team if you have any questions"],
     },
     {
       icon: <CreditCard className="w-8 h-8" />,
       title: "Secure Payment",
-      description: "Complete your purchase through our Discord server for personalized service and instant support.",
-      details: ["Join our Discord", "Speak with our team", "Secure transaction process"],
+      description: "You can pay with your credit card, bank transfer, or cash on delivery. You can also pay with your crypto currency.",
+      details: ["Pay with your credit card", "Pay with your bank transfer", "Pay with your crypto currency"],
     },
     {
       icon: <Download className="w-8 h-8" />,
       title: "Instant Delivery",
-      description: "Receive your account details or money boost within minutes of payment confirmation.",
-      details: ["Fast delivery", "Account credentials", "24/7 support available"],
+      description: "You will receive your product within minutes of payment confirmation.",
+      details: ["Fast delivery", "Product details", "24/7 support available"],
     },
     {
       icon: <CheckCircle className="w-8 h-8" />,
       title: "Enjoy Gaming",
-      description: "Start playing immediately with your new premium account or boosted in-game currency.",
-      details: ["Immediate access", "Premium features unlocked", "Lifetime warranty"],
+      description: "You can start using your product immediately.",
+      details: ["Immediate access", "Product features", "Lifetime warranty"],
     },
   ]
 
@@ -48,11 +48,10 @@ export default function HowItWorksPage() {
         {/* Hero Section */}
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent mb-6">
-            How TechBuy Works
+          How it works
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Get premium GTA V accounts and money boosting services in just 4 simple steps. Safe, secure, and delivered
-            instantly.
+           How TechBuy Works
           </p>
         </div>
 

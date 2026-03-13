@@ -51,28 +51,28 @@ export default function HelpCenterPage() {
         "Most orders are delivered within 5-15 minutes after payment confirmation. Complex orders may take up to 1 hour.",
     },
     {
-      question: "Is it safe to buy GTA accounts?",
+      question: "Is it safe to buy products?",
       answer:
-        "Yes, all our accounts are legitimate and come with lifetime warranty. We use safe methods and provide full support.",
+        "Yes, all our products are legitimate and come with lifetime warranty. We use safe methods and provide full support.",
     },
     {
       question: "What payment methods do you accept?",
       answer:
-        "We process all payments through our Discord server for personalized service and security. Multiple payment options available.",
+        "We process all payments through our secure payment gateway. Multiple payment options available.",
     },
     {
       question: "Do you offer refunds?",
       answer:
-        "We offer refunds within 24 hours if the product doesn't match the description or if there are delivery issues.",
+        "We offer refunds within 24 hours if the product doesn't match the description or if there are delivery issues. We also offer a 30-day return policy on all products.",
     },
     {
       question: "How do I contact support?",
-      answer: "You can reach us through Discord (fastest), live chat, or email. Our support team is available 24/7.",
+      answer: "You can reach us through our support portal. Our support team is available 24/7.",
     },
     {
-      question: "What's included with modded accounts?",
+      question: "What's included with products?",
       answer:
-        "Modded accounts include unlocked vehicles, properties, max level characters, and the specified amount of in-game money.",
+        "Products include the product itself and the warranty.",
     },
   ]
 
@@ -83,7 +83,7 @@ export default function HelpCenterPage() {
         <div className="max-w-7xl mx-auto px-4 py-4">
           <Link href="/" className="inline-flex items-center text-white hover:text-purple-400 transition-colors">
             <ArrowRight className="w-4 h-4 mr-2 rotate-180" />
-            Back to Marketplace
+            Back to Home
           </Link>
         </div>
       </div>
